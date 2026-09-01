@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>omila365 – Infrastructure</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Same dark theme as dashboard (copy from operator_dashboard.html) */
+        body { background: #0a0e17; color: #00ff41; font-family: 'Inter', 'Segoe UI', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 220px; background: #0d1117; border-right: 1px solid #1a2a3a; padding: 20px 0; display: flex; flex-direction: column; flex-shrink: 0; height: 100vh; overflow-y: auto; }
+        .sidebar .brand { text-align: center; padding: 0 15px 20px; border-bottom: 1px solid #1a2a3a; margin-bottom: 15px; }
+        .sidebar .brand h4 { color: #00ff41; text-shadow: 0 0 20px #00ff41; font-weight: 700; font-size: 1.2rem; }
+        .sidebar .brand small { color: #556677; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; }
+        .sidebar .nav-section { padding: 0 12px; margin-bottom: 8px; }
+        .sidebar .nav-section .section-title { color: #556677; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; padding: 10px 0 4px 10px; border-bottom: 1px solid #1a2a3a; margin-bottom: 4px; }
+        .sidebar .nav-item { display: flex; align-items: center; padding: 7px 12px; color: #8899aa; text-decoration: none; border-radius: 6px; font-size: 0.8rem; transition: all 0.2s; cursor: pointer; }
+        .sidebar .nav-item:hover { background: #1a2332; color: #00ff41; }
+        .sidebar .nav-item.active { background: #1a2332; color: #00ff41; border-left: 3px solid #00ff41; }
+        .sidebar .nav-item i { width: 20px; margin-right: 10px; font-size: 0.9rem; }
+        .sidebar .user-section { margin-top: auto; padding: 15px 15px 10px; border-top: 1px solid #1a2a3a; }
+        .sidebar .user-section .user-name { color: #00ff41; font-weight: 600; font-size: 0.85rem; }
+        .sidebar .user-section .user-links a { display: block; color: #556677; font-size: 0.7rem; padding: 3px 0; text-decoration: none; }
+        .sidebar .user-section .user-links a:hover { color: #00ff41; }
+        .sidebar .user-section .logout { color: #ff0044; font-weight: 600; margin-top: 5px; padding: 8px 12px; border-radius: 6px; background: rgba(255,0,68,0.05); text-align: center; text-decoration: none; display: block; }
+        .sidebar .user-section .logout:hover { background: rgba(255,0,68,0.15); }
+        .main-content { flex: 1; padding: 20px 30px; overflow-y: auto; height: 100vh; }
+        .page-title { color: #00ff41; font-size: 1.3rem; font-weight: 700; margin-bottom: 20px; border-bottom: 1px solid #1a2a3a; padding-bottom: 10px; }
+        .card { background: #111927; border: 1px solid #1a2a3a; border-radius: 8px; margin-bottom: 15px; }
+        .card-header { background: #1a2332; border-bottom: 1px solid #1a2a3a; color: #00ff41; font-weight: 600; padding: 10px 15px; }
+        .card-body { padding: 15px; }
+        .form-control { background: #0d1520; border: 1px solid #1a2a3a; color: #00ff41; }
+        .form-control:focus { border-color: #00ff41; box-shadow: 0 0 20px rgba(0,255,65,0.1); }
+        .btn-success { background: #00ff41; border: none; color: #0a0e17; font-weight: 600; }
+        .btn-success:hover { background: #00cc33; box-shadow: 0 0 20px rgba(0,255,65,0.3); }
+        .feature-card { background: #0d1520; border: 1px solid #1a2a3a; border-radius: 8px; padding: 20px; text-align: center; }
+        .feature-card h6 { color: #00ff41; }
+        .feature-card p { color: #8899aa; font-size: 0.75rem; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #0a0e17; }
+        ::-webkit-scrollbar-thumb { background: #00ff41; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR (Same as operator) ===== -->
+<div class="sidebar">
+    <div class="brand">
+        <h4>☠️ omila365</h4>
+        <small>OPERATOR PANEL</small>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">OVERVIEW</div>
+        <a href="{{ url_for('operator.dashboard') }}#dashboard" class="nav-item"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="{{ url_for('operator.dashboard') }}#token-vault" class="nav-item"><i class="bi bi-key"></i> Token Vault</a>
+        <a href="{{ url_for('operator.dashboard') }}#lures" class="nav-item"><i class="bi bi-folder-open"></i> Lures</a>
+        <a href="{{ url_for('operator.dashboard') }}#inbox" class="nav-item"><i class="bi bi-inbox"></i> Inbox</a>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">TOOLS</div>
+        <a href="{{ url_for('operator.dashboard') }}#b2b" class="nav-item"><i class="bi bi-envelope-paper"></i> B2B Sender</a>
+        <a href="{{ url_for('operator.dashboard') }}#extractor" class="nav-item"><i class="bi bi-search"></i> Email Extractor</a>
+        <a href="{{ url_for('operator.dashboard') }}#domains" class="nav-item"><i class="bi bi-globe2"></i> Domains</a>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">MONITORING</div>
+        <a href="{{ url_for('operator.dashboard') }}#keywords" class="nav-item"><i class="bi bi-tags"></i> Keyword Alerts</a>
+        <a href="{{ url_for('operator.dashboard') }}#ai" class="nav-item"><i class="bi bi-robot"></i> AI Intelligence</a>
+        <a href="{{ url_for('operator.dashboard') }}#profiles" class="nav-item"><i class="bi bi-person-badge"></i> Profiles</a>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">ACCOUNT</div>
+        <a href="{{ url_for('operator.dashboard') }}#settings" class="nav-item"><i class="bi bi-gear"></i> Settings</a>
+        <a href="{{ url_for('operator.dashboard') }}#reports" class="nav-item"><i class="bi bi-flag"></i> My Reports</a>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">SYSTEM</div>
+        <a href="#" class="nav-item active"><i class="bi bi-server"></i> Infrastructure</a>
+        <a href="{{ url_for('operator.dashboard') }}#admin-control" class="nav-item"><i class="bi bi-shield-lock"></i> Admin Control</a>
+    </div>
+    <div class="user-section">
+        <div class="user-name">@{{ current_user.username }}</div>
+        <div class="user-links">
+            <a href="#" onclick="alert('Report Issue')">📋 Report Issue</a>
+            <a href="#" onclick="alert('Join Channel')">📢 Join Channel</a>
+            <a href="#" onclick="alert('Contact Admin')">✉️ Contact Admin</a>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="logout">🚪 Sign out</a>
+    </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main-content">
+    <div class="page-title">
+        <span><i class="bi bi-server"></i> Infrastructure <small>Connect your own VPS to host lures and manage domains</small></span>
+    </div>
+
+    <!-- Feature Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <i class="bi bi-server" style="font-size: 2rem; color: #00ff41;"></i>
+                <h6>Your Server</h6>
+                <p>Lures run on your own VPS</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <i class="bi bi-lock" style="font-size: 2rem; color: #00ff41;"></i>
+                <h6>Encrypted Storage</h6>
+                <p>Credentials encrypted at rest</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <i class="bi bi-sliders2" style="font-size: 2rem; color: #00ff41;"></i>
+                <h6>Full Control</h6>
+                <p>You own the server and data</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connection Form -->
+    <div class="card">
+        <div class="card-header">Connect Your VPS</div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('operator.operator_connect_vps') }}">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label>IP Address</label>
+                            <input type="text" name="ip" class="form-control" placeholder="e.g. 123.45.67.89">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label>SSH Port</label>
+                            <input type="number" name="port" class="form-control" value="22">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label>Username</label>
+                            <input type="text" name="username" class="form-control" placeholder="root">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Authentication Method</label>
+                    <select name="auth_method" class="form-select">
+                        <option value="password">Password</option>
+                        <option value="ssh_key">SSH Key</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Password / Key</label>
+                    <input type="password" name="password" class="form-control" placeholder="Your SSH password or key path">
+                    <small class="text-muted">Your credentials are encrypted with AES-256 before storage.</small>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">🔗 Connect & Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

